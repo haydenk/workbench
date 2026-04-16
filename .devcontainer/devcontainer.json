@@ -25,7 +25,7 @@
 
     // Cloud CLIs not in universal
     "ghcr.io/devcontainers/features/aws-cli:1": {},
-    "ghcr.io/devcontainers-extra/features/google-cloud-cli:1": {}
+    "ghcr.io/devcontainers/features/google-cloud-cli:1": {}
   },
 
   // ─── Lifecycle scripts ──────────────────────────────────────────────────────
