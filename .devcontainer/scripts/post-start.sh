@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euox pipefail
 # Runs on every container start. Keep fast.
 
 # Map Codespace secrets (can't start with GITHUB_) to the names gh CLI expects.

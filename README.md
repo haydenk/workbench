@@ -22,25 +22,19 @@ Configure once in your GitHub settings:
 
 ### Base image
 
-`mcr.microsoft.com/devcontainers/universal:5` — Ubuntu 22.04 with the following pre-installed:
-
-| Category | Tools |
-|---|---|
-| Languages | Python, Node.js, Go, Ruby, Java, .NET, PHP |
-| Containers | Docker CLI, kubectl, Helm |
-| Cloud | Azure CLI |
-| VCS | git, GitHub CLI |
-| Utilities | curl, wget, jq, make, zip |
+`mcr.microsoft.com/devcontainers/base:ubuntu-24.04` — minimal Ubuntu 24.04 LTS with no pre-installed runtimes. Everything else is added via features, mise, or dotfiles.
 
 ### Added by devcontainer features
 
 | Tool | Purpose |
 |---|---|
+| common-utils | Sets zsh as default shell |
+| github-cli | `gh` CLI |
 | git-lfs | Large file support |
 | docker-outside-of-docker | Docker socket wiring for compose and builds |
-| fish | Friendly shell — installed via `post-create.sh` (not a feature) |
+| fish | Friendly shell — installed via `post-create.sh` |
 
-> **Note:** Cloud CLIs (AWS, gcloud, etc.) are no longer installed as devcontainer features. Add them via mise when needed — e.g. `mise use -g aqua:aws-cli` or `mise use -g aqua:google-cloud-sdk` (or add to a repo's `mise.toml`).
+> **Note:** Runtimes and cloud CLIs (kubectl, helm, AWS, gcloud, Azure, etc.) are not pre-installed. Add them via mise when needed — e.g. `mise use -g aqua:aws-cli` or add to a repo's `mise.toml`.
 
 ### Added by dotfiles (`dotfiles_bootstrap`)
 
@@ -175,10 +169,10 @@ Cloned repos land in `~/repos/<owner>/<repo>` by default. Set `GHREPO_DIR` to ch
 
 ```
 .devcontainer/
-├── devcontainer.json          # container definition
+├── devcontainer.json     # container definition
 └── scripts/
-    ├── post-create.sh         # runs once on container creation
-    ├── post-start.sh          # runs on every container start
-    ├── ghrepo.zsh             # ghrepo function for zsh
-    └── ghrepo.fish            # ghrepo function for fish
+    ├── post-create.sh    # runs once on container creation
+    ├── post-start.sh     # runs on every container start
+    ├── ghrepo.zsh        # ghrepo function for zsh
+    └── ghrepo.fish       # ghrepo function for fish
 ```

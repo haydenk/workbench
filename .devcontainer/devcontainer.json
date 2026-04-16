@@ -1,28 +1,24 @@
 {
   "name": "workbench",
-  "build": {
-    "dockerfile": "Dockerfile"
-  },
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
 
   // ─── Features ──────────────────────────────────────────────────────────────
-  // Universal image already ships: git, gh, kubectl, helm, azure-cli, docker CLI,
-  // python, node, go, ruby, java, .net. Only add what's missing.
   "features": {
-    // Set zsh as default shell + fish
+    // Set zsh as default shell + configure common utils
     "ghcr.io/devcontainers/features/common-utils:2": {
       "configureZshAsDefaultShell": true,
       "installOhMyZsh": false,
       "upgradePackages": false
     },
-    // git-lfs not in universal
+    // gh CLI
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    // git-lfs
     "ghcr.io/devcontainers/features/git-lfs:1": {},
-
-    // Docker socket wiring (CLI is in universal, but socket setup is not)
+    // Docker socket wiring
     "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
       "moby": false,
       "dockerDashComposeVersion": "latest"
-    },
-
+    }
   },
 
   // ─── Lifecycle scripts ──────────────────────────────────────────────────────
