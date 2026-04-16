@@ -1,6 +1,8 @@
 {
   "name": "workbench",
-  "image": "mcr.microsoft.com/devcontainers/universal:5",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
 
   // ─── Features ──────────────────────────────────────────────────────────────
   // Universal image already ships: git, gh, kubectl, helm, azure-cli, docker CLI,
