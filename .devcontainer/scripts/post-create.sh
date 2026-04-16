@@ -5,6 +5,13 @@ echo "════════════════════════�
 echo "  post-create"
 echo "════════════════════════════════════════"
 
+# ── Install fish ──────────────────────────────────────────────────────────────
+# Remove the yarn apt source if present — its GPG key is expired and breaks
+# apt-get update on older universal images.
+sudo rm -f /etc/apt/sources.list.d/yarn.list
+sudo apt-get update -y -qq
+sudo apt-get install -y -qq fish
+
 # ── Install ghrepo shell functions ───────────────────────────────────────────
 SCRIPTS=/workspaces/workbench/.devcontainer/scripts
 

@@ -22,7 +22,7 @@ Configure once in your GitHub settings:
 
 ### Base image
 
-`mcr.microsoft.com/devcontainers/universal:2` — Ubuntu 22.04 with the following pre-installed:
+`mcr.microsoft.com/devcontainers/universal:5` — Ubuntu 22.04 with the following pre-installed:
 
 | Category | Tools |
 |---|---|
@@ -39,6 +39,7 @@ Configure once in your GitHub settings:
 | git-lfs | Large file support |
 | docker-outside-of-docker | Docker socket wiring for compose and builds |
 | AWS CLI | Amazon Web Services |
+| fish | Friendly shell — installed via `post-create.sh` (not a feature) |
 
 > **Note:** The gcloud CLI is no longer installed as a devcontainer feature. Add it manually if needed, or preferably via mise — e.g. `mise use -g aqua:google-cloud-sdk` (or add it to a repo's `mise.toml`).
 

@@ -12,8 +12,6 @@
       "installOhMyZsh": false,
       "upgradePackages": false
     },
-    "ghcr.io/devcontainers-extra/features/fish-apt-get:1": {},
-
     // git-lfs not in universal
     "ghcr.io/devcontainers/features/git-lfs:1": {},
 
