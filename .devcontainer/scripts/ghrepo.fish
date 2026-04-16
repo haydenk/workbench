@@ -33,15 +33,14 @@ function _ghrepo_token --argument-names org
 end
 
 function _ghrepo_fetch --argument-names org
-    set -l args repo list --limit 1000 --json nameWithOwner,sshUrl,description,isPrivate,isArchived,updatedAt
+    set -l args repo list --limit 1000 --json nameWithOwner,description,isPrivate,isArchived,updatedAt
     if test -n "$org"
-        set args repo list $org --limit 1000 --json nameWithOwner,sshUrl,description,isPrivate,isArchived,updatedAt
+        set args repo list $org --limit 1000 --json nameWithOwner,description,isPrivate,isArchived,updatedAt
     end
     set -lx GH_TOKEN (_ghrepo_token $org)
     gh $args 2>/dev/null \
         | jq -r '.[] | [
             .nameWithOwner,
-            .sshUrl,
             (if .isPrivate then "🔒" else "🌐" end),
             (if .isArchived then "[archived] " else "" end) + (.description // ""),
             (.updatedAt | split("T")[0])
@@ -85,7 +84,7 @@ function ghrepo --description "Fuzzy-search GitHub repos and clone on demand"
     # Pick with fzf
     set -l query (string join ' ' $argv)
     set -l selected (string join \n $all_repos \
-        | awk -F'\t' '{printf "%s  %-12s  %-45s  %s\n", $3, $5, $1, $4}' \
+        | awk -F'\t' '{printf "%s  %-12s  %-45s  %s\n", $2, $4, $1, $3}' \
         | fzf --ansi \
               --query "$query" \
               --prompt "repo> " \
@@ -103,8 +102,6 @@ function ghrepo --description "Fuzzy-search GitHub repos and clone on demand"
     end
 
     # Clone
-    set -l ssh_url (string join \n $all_repos \
-        | awk -F'\t' -v n="$selected" '$1==n {print $2}')
     set -l parts (string split / $selected)
     set -l owner $parts[1]
     set -l repo $parts[2]
@@ -122,6 +119,7 @@ function ghrepo --description "Fuzzy-search GitHub repos and clone on demand"
     else
         echo "Cloning $selected → $target"
         mkdir -p (dirname $target)
-        git clone --filter=blob:none $ssh_url $target
+        set -lx GH_TOKEN (_ghrepo_token $owner)
+        gh repo clone $selected $target -- --filter=blob:none
     end
 end

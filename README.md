@@ -15,8 +15,7 @@ A GitHub Codespaces devcontainer for general-purpose terminal, scripting, and De
 Configure once in your GitHub settings:
 
 - **Dotfiles**: github.com/settings/codespaces → set your dotfiles repo
-- **SSH keys**: github.com/settings/codespaces → add your SSH key for git access
-- **Secrets**: set `GH_PAT` (personal PAT) and optionally `GH_TOKEN_ORG` (org PAT) to enable `ghrepo` — see [Creating a PAT](#creating-a-pat) below
+- **Secrets**: set `GH_PAT` (personal PAT) and optionally org-specific secrets to enable `ghrepo` — see [Creating a PAT](#creating-a-pat) below
 
 ## What's included
 
@@ -133,16 +132,16 @@ The `<ORGNAME>` suffix is the org name uppercased with non-alphanumeric characte
 
 Once secrets are saved, Codespaces injects them as environment variables when the container starts. No restart is needed if you set them before creating the Codespace; if you add them after, rebuild the container (`Codespaces: Rebuild Container` from the VS Code command palette).
 
-> **Note:** GitHub automatically provides a built-in `GITHUB_TOKEN` in Actions workflows, but Codespaces does **not** inject one automatically — you must set `GH_PAT` as a Codespaces secret, and `post-start.sh` will map it to `GITHUB_TOKEN` for you.
+> **Note:** GitHub automatically injects `GITHUB_TOKEN` into Codespaces, but it is scoped only to the codespace's own repository. `GH_PAT` is required to access your personal repos and org repos. `post-start.sh` maps `GH_PAT` → `GITHUB_TOKEN` on every container start so the `gh` CLI picks it up automatically.
 
 ## ghrepo
 
-Fuzzy-search your GitHub repos and clone any on demand. Available in both zsh and fish.
+Fuzzy-search your GitHub repos and clone any on demand. Available in both zsh and fish. Clones via HTTPS using your PAT — no SSH key required.
 
 ```
 ghrepo                     # fzf picker → clone to ~/repos/<owner>/<repo>
 ghrepo <query>             # pre-filtered search
-ghrepo -o <org> [query]    # include an org's repos
+ghrepo -o <org> [query]    # include an org's repos (uses GH_TOKEN_ORG_<NAME>)
 ghrepo -d <path> [query]   # clone to a specific path
 ghrepo list [query]        # print matches without cloning
 ```
@@ -153,6 +152,8 @@ Inside the fzf picker:
 - `ESC` — cancel
 
 Cloned repos land in `~/repos/<owner>/<repo>` by default. Set `GHREPO_DIR` to change the base path.
+
+When cloning, `ghrepo` resolves the right token for the repo owner: `GH_TOKEN_ORG_<NAME>` for orgs, `GITHUB_TOKEN` (from `GH_PAT`) for personal repos. The appropriate token is passed to `gh repo clone` at clone time, so each owner's repos are cloned with the correct credentials.
 
 ## VS Code extensions
 

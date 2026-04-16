@@ -39,7 +39,7 @@ function ghrepo() {
 
   local selected
   selected=$(echo "$all_repos" \
-    | awk -F'\t' '{printf "%s  %-12s  %-45s  %s\n", $3, $5, $1, $4}' \
+    | awk -F'\t' '{printf "%s  %-12s  %-45s  %s\n", $2, $4, $1, $3}' \
     | fzf --ansi \
           --query "$query" \
           --prompt "repo> " \
@@ -53,8 +53,7 @@ function ghrepo() {
   [[ -z "$selected" ]] && return 0
   $list_only && { echo "$selected"; return 0; }
 
-  local ssh_url owner repo target
-  ssh_url=$(awk -F'\t' -v n="$selected" '$1==n {print $2}' <<< "$all_repos")
+  local owner repo target
   owner="${selected%%/*}"
   repo="${selected##*/}"
   target="${dest:-$repos_base/$owner/$repo}"
@@ -65,7 +64,7 @@ function ghrepo() {
   else
     echo "Cloning $selected → $target"
     mkdir -p "$(dirname "$target")"
-    git clone --filter=blob:none "$ssh_url" "$target"
+    GH_TOKEN="$(_ghrepo_token "$owner")" gh repo clone "$selected" "$target" -- --filter=blob:none
   fi
 }
 
@@ -87,12 +86,11 @@ function _ghrepo_token() {
 
 function _ghrepo_fetch() {
   local org="${1:-}"
-  local args=(repo list --limit 1000 --json nameWithOwner,sshUrl,description,isPrivate,isArchived,updatedAt)
-  [[ -n "$org" ]] && args=(repo list "$org" --limit 1000 --json nameWithOwner,sshUrl,description,isPrivate,isArchived,updatedAt)
+  local args=(repo list --limit 1000 --json nameWithOwner,description,isPrivate,isArchived,updatedAt)
+  [[ -n "$org" ]] && args=(repo list "$org" --limit 1000 --json nameWithOwner,description,isPrivate,isArchived,updatedAt)
   GH_TOKEN="$(_ghrepo_token "$org")" gh "${args[@]}" 2>/dev/null \
     | jq -r '.[] | [
         .nameWithOwner,
-        .sshUrl,
         (if .isPrivate then "🔒" else "🌐" end),
         (if .isArchived then "[archived] " else "" end) + (.description // ""),
         (.updatedAt | split("T")[0])

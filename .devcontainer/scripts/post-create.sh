@@ -19,6 +19,7 @@ rm -f "$HOME/.zshrc" "$HOME/.zprofile" "$HOME/.zlogin" "$HOME/.zlogout"
 SCRIPTS=/workspaces/workbench/.devcontainer/scripts
 
 # zsh — copy to ZSH_CUSTOM dir and source from .zshrc
+mkdir -p "$HOME/.config/zsh"
 cp "$SCRIPTS/ghrepo.zsh" "$HOME/.config/zsh/ghrepo.zsh"
 if ! grep -q 'ghrepo.zsh' "$HOME/.config/zsh/.zshrc" 2>/dev/null; then
   echo 'source "$HOME/.config/zsh/ghrepo.zsh"' >> "$HOME/.config/zsh/.zshrc"
