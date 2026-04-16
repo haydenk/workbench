@@ -67,5 +67,11 @@
     }
   },
 
+  "hostRequirements": {
+    "cpus": 8,
+    "memory": "32gb",
+    "storage": "64gb"
+  },
+
   "postAttachCommand": "echo '✓ remote-work ready'"
 }

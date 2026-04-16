@@ -2,6 +2,8 @@
 
 A GitHub Codespaces devcontainer for general-purpose terminal, scripting, and DevOps work. Opens a fully configured Linux environment with your dotfiles, cloud CLIs, and Docker — ready in seconds.
 
+> **Note:** This project is designed and tested specifically for **GitHub Codespaces**. While the devcontainer spec is technically portable, features like dotfiles integration, Codespaces secrets (`GITHUB_TOKEN`), and machine type requirements (`premiumLinux`) are GitHub Codespaces-specific and will not work as expected in other devcontainer environments (e.g., VS Code Dev Containers running locally).
+
 ## Getting started
 
 1. Create a new Codespace from this repo
@@ -12,7 +14,7 @@ Configure once in your GitHub settings:
 
 - **Dotfiles**: github.com/settings/codespaces → set your dotfiles repo
 - **SSH keys**: github.com/settings/codespaces → add your SSH key for git access
-- **Secrets**: set `GITHUB_TOKEN` (PAT with `repo` + `read:org`) to enable `ghrepo`
+- **Secrets**: set `GITHUB_TOKEN` (PAT with `repo` + `read:org`) to enable `ghrepo` — see [Creating a PAT](#creating-a-pat) below
 
 ## What's included
 
@@ -64,6 +66,60 @@ Your dotfiles provide:
 ### Project-level tools
 
 Repos cloned into this workspace bring their own `mise.toml`. Run `mise install` inside any repo to get its required runtimes and tools (terraform, rust, specific node/python versions, etc.).
+
+## Creating a PAT
+
+`ghrepo` authenticates to the GitHub API using a Personal Access Token stored as a Codespaces secret named `GITHUB_TOKEN`.
+
+### 1. Generate the token
+
+Go to **github.com/settings/tokens** and choose one of:
+
+- **Classic token** (simpler): click *Generate new token (classic)*
+- **Fine-grained token** (more restrictive): click *Generate new token (beta)*
+
+**Classic token — required scopes:**
+
+| Scope | Why |
+|---|---|
+| `repo` | Read access to your private repositories |
+| `read:org` | List repositories in organizations you belong to |
+
+**Fine-grained token — required permissions:**
+
+Fine-grained tokens are scoped to a specific owner (your account or one org). Create one token per owner you want `ghrepo` to search.
+
+| Permission | Access level | Why |
+|---|---|---|
+| Repository access | *All repositories* (or select specific repos) | Allows listing repos |
+| Contents | Read-only | Required by the repos permission |
+| Members | Read-only (org tokens only) | List org members/repos |
+
+Set an expiration that fits your workflow (90 days is a reasonable default), then copy the generated token — you won't see it again.
+
+### 2. Add it as a Codespaces secret
+
+You can store the secret at the **user level** (available to all your codespaces) or at the **repository level** (only available inside codespaces for this repo).
+
+**User-level (recommended):**
+
+1. Go to **github.com/settings/codespaces**
+2. Under *Secrets*, click **New secret**
+3. Name: `GITHUB_TOKEN`
+4. Value: paste your PAT
+5. Under *Repository access*, select **this repository** (workbench) plus any other repos where you want it available
+6. Click **Add secret**
+
+**Repository-level:**
+
+1. Go to this repo → **Settings → Secrets and variables → Codespaces**
+2. Click **New repository secret**
+3. Name: `GITHUB_TOKEN`, Value: paste your PAT
+4. Click **Add secret**
+
+Once the secret is saved, Codespaces injects it as the `GITHUB_TOKEN` environment variable when the container starts. No restart is needed if you set it before creating the Codespace; if you add it after, rebuild the container (`Codespaces: Rebuild Container` from the VS Code command palette).
+
+> **Note:** GitHub automatically provides a built-in `GITHUB_TOKEN` in Actions workflows, but Codespaces does **not** inject one automatically — you must set it manually as described above.
 
 ## ghrepo
 
