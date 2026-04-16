@@ -49,7 +49,10 @@
         "EditorConfig.EditorConfig",
         "usernamehw.errorlens",
         "zhuangtongfa.material-theme",
-        "pkief.material-icon-theme"
+        "pkief.material-icon-theme",
+        // AI
+        "anthropic.claude-vscode",
+        "github.copilot"
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "zsh",
