@@ -1,0 +1,71 @@
+{
+  "name": "workbench",
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+
+  // ─── Features ──────────────────────────────────────────────────────────────
+  // Universal image already ships: git, gh, kubectl, helm, azure-cli, docker CLI,
+  // python, node, go, ruby, java, .net. Only add what's missing.
+  "features": {
+    // Set zsh as default shell + fish
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "configureZshAsDefaultShell": true,
+      "installOhMyZsh": false,
+      "upgradePackages": false
+    },
+    "ghcr.io/devcontainers-extra/features/fish-apt-get:1": {},
+
+    // git-lfs not in universal
+    "ghcr.io/devcontainers/features/git-lfs:1": {},
+
+    // Docker socket wiring (CLI is in universal, but socket setup is not)
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "moby": false,
+      "dockerDashComposeVersion": "latest"
+    },
+
+    // Cloud CLIs not in universal
+    "ghcr.io/devcontainers/features/aws-cli:1": {},
+    "ghcr.io/devcontainers-extra/features/google-cloud-cli:1": {}
+  },
+
+  // ─── Lifecycle scripts ──────────────────────────────────────────────────────
+  "postCreateCommand": "bash /workspaces/remote-work/.devcontainer/scripts/post-create.sh",
+  "postStartCommand": "bash /workspaces/remote-work/.devcontainer/scripts/post-start.sh",
+
+  // ─── VS Code / Cursor settings ──────────────────────────────────────────────
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // Shell
+        "mads-hartmann.bash-ide-vscode",
+        "foxundermoon.shell-format",
+        "timonwong.shellcheck",
+        // Git
+        "eamodio.gitlens",
+        "mhutchie.git-graph",
+        // General
+        "redhat.vscode-yaml",
+        "tamasfe.even-better-toml",
+        "ms-azuretools.vscode-docker",
+        "EditorConfig.EditorConfig",
+        "usernamehw.errorlens",
+        "zhuangtongfa.material-theme",
+        "pkief.material-icon-theme"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.fontSize": 14,
+        "editor.fontFamily": "'Fira Code', 'Cascadia Code', monospace",
+        "editor.fontLigatures": true,
+        "editor.fontSize": 14,
+        "editor.formatOnSave": true,
+        "files.trimTrailingWhitespace": true,
+        "files.insertFinalNewline": true,
+        "git.autofetch": true,
+        "gitlens.hovers.currentLine.over": "line"
+      }
+    }
+  },
+
+  "postAttachCommand": "echo '✓ remote-work ready'"
+}
