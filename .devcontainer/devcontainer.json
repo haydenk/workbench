@@ -26,8 +26,8 @@
   },
 
   // ─── Lifecycle scripts ──────────────────────────────────────────────────────
-  "postCreateCommand": "bash /workspaces/remote-work/.devcontainer/scripts/post-create.sh",
-  "postStartCommand": "bash /workspaces/remote-work/.devcontainer/scripts/post-start.sh",
+  "postCreateCommand": "bash /workspaces/workbench/.devcontainer/scripts/post-create.sh",
+  "postStartCommand": "bash /workspaces/workbench/.devcontainer/scripts/post-start.sh",
 
   // ─── VS Code / Cursor settings ──────────────────────────────────────────────
   "customizations": {
@@ -73,5 +73,5 @@
     "storage": "64gb"
   },
 
-  "postAttachCommand": "echo '✓ remote-work ready'"
+  "postAttachCommand": "echo '✓ workbench ready'"
 }
