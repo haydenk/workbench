@@ -38,10 +38,9 @@ Configure once in your GitHub settings:
 |---|---|
 | git-lfs | Large file support |
 | docker-outside-of-docker | Docker socket wiring for compose and builds |
-| AWS CLI | Amazon Web Services |
 | fish | Friendly shell — installed via `post-create.sh` (not a feature) |
 
-> **Note:** The gcloud CLI is no longer installed as a devcontainer feature. Add it manually if needed, or preferably via mise — e.g. `mise use -g aqua:google-cloud-sdk` (or add it to a repo's `mise.toml`).
+> **Note:** Cloud CLIs (AWS, gcloud, etc.) are no longer installed as devcontainer features. Add them via mise when needed — e.g. `mise use -g aqua:aws-cli` or `mise use -g aqua:google-cloud-sdk` (or add to a repo's `mise.toml`).
 
 ### Added by dotfiles (`dotfiles_bootstrap`)
 

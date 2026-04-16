@@ -21,8 +21,6 @@
       "dockerDashComposeVersion": "latest"
     },
 
-    // Cloud CLIs not in universal
-    "ghcr.io/devcontainers/features/aws-cli:1": {}
   },
 
   // ─── Lifecycle scripts ──────────────────────────────────────────────────────
