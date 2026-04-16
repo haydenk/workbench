@@ -8,9 +8,9 @@
 #   ghrepo -l/--list [query]    print match(es), no clone
 #
 # Token resolution order for an org named "mycompany":
-#   1. GITHUB_TOKEN_ORG_MYCOMPANY  (org-specific)
-#   2. GITHUB_TOKEN_ORG            (generic org fallback)
-#   3. GITHUB_TOKEN                (personal / classic token)
+#   1. GH_TOKEN_ORG_MYCOMPANY  (org-specific Codespace secret)
+#   2. GH_TOKEN_ORG            (generic org fallback Codespace secret)
+#   3. GH_PAT                  (personal token — mapped to GITHUB_TOKEN at start)
 
 # Resolve the right PAT for a given owner (empty = personal account).
 function _ghrepo_token --argument-names org
@@ -20,13 +20,13 @@ function _ghrepo_token --argument-names org
     end
     # Normalise org name: uppercase, replace non-alphanumeric with _
     set -l key (string upper $org | string replace -ra '[^A-Z0-9]' '_')
-    set -l varname "GITHUB_TOKEN_ORG_$key"
+    set -l varname "GH_TOKEN_ORG_$key"
     # Indirect env lookup via `env` output (fish has no $$ expansion)
     set -l val (env | string replace --filter --regex "^$varname=(.*)" '$1')
     if test -n "$val"
         echo $val
-    else if set -q GITHUB_TOKEN_ORG
-        echo $GITHUB_TOKEN_ORG
+    else if set -q GH_TOKEN_ORG
+        echo $GH_TOKEN_ORG
     else if set -q GITHUB_TOKEN
         echo $GITHUB_TOKEN
     end

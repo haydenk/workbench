@@ -14,7 +14,7 @@ Configure once in your GitHub settings:
 
 - **Dotfiles**: github.com/settings/codespaces → set your dotfiles repo
 - **SSH keys**: github.com/settings/codespaces → add your SSH key for git access
-- **Secrets**: set `GITHUB_TOKEN` (personal PAT) and optionally `GITHUB_TOKEN_ORG` (org PAT) to enable `ghrepo` — see [Creating a PAT](#creating-a-pat) below
+- **Secrets**: set `GH_PAT` (personal PAT) and optionally `GH_TOKEN_ORG` (org PAT) to enable `ghrepo` — see [Creating a PAT](#creating-a-pat) below
 
 ## What's included
 
@@ -71,7 +71,7 @@ Repos cloned into this workspace bring their own `mise.toml`. Run `mise install`
 
 `ghrepo` authenticates to the GitHub API using Personal Access Tokens stored as Codespaces secrets.
 
-> **Note on fine-grained PATs:** Fine-grained tokens are scoped to a single resource owner (your personal account **or** one organization). If you want `ghrepo` to search both your personal repos and an org's repos, you need two tokens — one per owner — stored as separate secrets (`GITHUB_TOKEN` and `GITHUB_TOKEN_ORG`). Classic tokens can cover both with a single token using the `read:org` scope.
+> **Note on fine-grained PATs:** Fine-grained tokens are scoped to a single resource owner (your personal account **or** one organization). If you want `ghrepo` to search both your personal repos and an org's repos, you need two tokens — one per owner — stored as separate secrets (`GH_PAT` and `GH_TOKEN_ORG`). Classic tokens can cover both with a single token using the `read:org` scope.
 
 ### 1. Generate the token(s)
 
@@ -103,17 +103,19 @@ Set an expiration that fits your workflow (90 days is a reasonable default), the
 
 You can store secrets at the **user level** (available to all your codespaces) or at the **repository level** (only available inside codespaces for this repo).
 
+> **Note on secret naming:** GitHub Codespaces reserves environment variables starting with `GITHUB_` and won't let you store secrets with that prefix. All secrets use the `GH_` prefix instead. `post-start.sh` maps `GH_PAT` → `GITHUB_TOKEN` on every container start so the `gh` CLI picks it up automatically.
+
 | Secret name | Value | Required |
 |---|---|---|
-| `GITHUB_TOKEN` | Personal account PAT (or classic token) | Yes |
-| `GITHUB_TOKEN_ORG_<NAME>` | Org-specific PAT, e.g. `GITHUB_TOKEN_ORG_MYCOMPANY` | One per org (fine-grained) |
-| `GITHUB_TOKEN_ORG` | Generic org PAT fallback | Optional |
+| `GH_PAT` | Personal account PAT (or classic token) | Yes |
+| `GH_TOKEN_ORG_<NAME>` | Org-specific PAT, e.g. `GH_TOKEN_ORG_MYCOMPANY` | One per org (fine-grained) |
+| `GH_TOKEN_ORG` | Generic org PAT fallback | Optional |
 
-`ghrepo` uses `GITHUB_TOKEN` for personal repo lookups. When you pass `-o <org>`, it resolves the token in this order:
+`ghrepo` uses `GH_PAT` (via `GITHUB_TOKEN`) for personal repo lookups. When you pass `-o <org>`, it resolves the token in this order:
 
-1. `GITHUB_TOKEN_ORG_<ORGNAME>` — org-specific (e.g. `GITHUB_TOKEN_ORG_MYCOMPANY` for org `mycompany`)
-2. `GITHUB_TOKEN_ORG` — generic org fallback
-3. `GITHUB_TOKEN` — personal / classic token
+1. `GH_TOKEN_ORG_<ORGNAME>` — org-specific (e.g. `GH_TOKEN_ORG_MYCOMPANY` for org `mycompany`)
+2. `GH_TOKEN_ORG` — generic org fallback
+3. `GITHUB_TOKEN` — personal / classic token (set from `GH_PAT` at startup)
 
 The `<ORGNAME>` suffix is the org name uppercased with non-alphanumeric characters replaced by `_`. You can have as many org-specific secrets as you need — one per org.
 
@@ -134,7 +136,7 @@ The `<ORGNAME>` suffix is the org name uppercased with non-alphanumeric characte
 
 Once secrets are saved, Codespaces injects them as environment variables when the container starts. No restart is needed if you set them before creating the Codespace; if you add them after, rebuild the container (`Codespaces: Rebuild Container` from the VS Code command palette).
 
-> **Note:** GitHub automatically provides a built-in `GITHUB_TOKEN` in Actions workflows, but Codespaces does **not** inject one automatically — you must set it manually as described above.
+> **Note:** GitHub automatically provides a built-in `GITHUB_TOKEN` in Actions workflows, but Codespaces does **not** inject one automatically — you must set `GH_PAT` as a Codespaces secret, and `post-start.sh` will map it to `GITHUB_TOKEN` for you.
 
 ## ghrepo
 
