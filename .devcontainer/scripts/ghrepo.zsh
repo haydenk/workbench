@@ -5,6 +5,11 @@
 #   ghrepo -o <org> [query]   include an org's repos in the search
 #   ghrepo -d <dest> [query]  clone into <dest> instead
 #   ghrepo list [query]       print match(es), no clone
+#
+# Token resolution order for an org named "mycompany":
+#   1. GITHUB_TOKEN_ORG_MYCOMPANY  (org-specific)
+#   2. GITHUB_TOKEN_ORG            (generic org fallback)
+#   3. GITHUB_TOKEN                (personal / classic token)
 
 function ghrepo() {
   local org="" dest="" list_only=false query=""
@@ -64,10 +69,27 @@ function ghrepo() {
   fi
 }
 
+# Resolve the right PAT for a given owner (empty = personal account).
+# Lookup order: GITHUB_TOKEN_ORG_<NAME> → GITHUB_TOKEN_ORG → GITHUB_TOKEN
+function _ghrepo_token() {
+  local org="${1:-}"
+  if [[ -z "$org" ]]; then
+    echo "${GITHUB_TOKEN:-}"
+    return
+  fi
+  # Normalise org name to uppercase + replace non-alphanumeric with _
+  local key="${org:u}"
+  key="${key//[^A-Z0-9]/_}"
+  local var="GITHUB_TOKEN_ORG_${key}"
+  # ${(P)var} is zsh indirect expansion
+  echo "${(P)var:-${GITHUB_TOKEN_ORG:-${GITHUB_TOKEN:-}}}"
+}
+
 function _ghrepo_fetch() {
+  local org="${1:-}"
   local args=(repo list --limit 1000 --json nameWithOwner,sshUrl,description,isPrivate,isArchived,updatedAt)
-  [[ -n "${1:-}" ]] && args=(repo list "$1" --limit 1000 --json nameWithOwner,sshUrl,description,isPrivate,isArchived,updatedAt)
-  gh "${args[@]}" 2>/dev/null \
+  [[ -n "$org" ]] && args=(repo list "$org" --limit 1000 --json nameWithOwner,sshUrl,description,isPrivate,isArchived,updatedAt)
+  GH_TOKEN="$(_ghrepo_token "$org")" gh "${args[@]}" 2>/dev/null \
     | jq -r '.[] | [
         .nameWithOwner,
         .sshUrl,

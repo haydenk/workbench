@@ -6,12 +6,38 @@
 #   ghrepo -o/--org <org>       include an org's repos in the search
 #   ghrepo -d/--dest <dest>     clone into <dest> instead
 #   ghrepo -l/--list [query]    print match(es), no clone
+#
+# Token resolution order for an org named "mycompany":
+#   1. GITHUB_TOKEN_ORG_MYCOMPANY  (org-specific)
+#   2. GITHUB_TOKEN_ORG            (generic org fallback)
+#   3. GITHUB_TOKEN                (personal / classic token)
+
+# Resolve the right PAT for a given owner (empty = personal account).
+function _ghrepo_token --argument-names org
+    if test -z "$org"
+        echo $GITHUB_TOKEN
+        return
+    end
+    # Normalise org name: uppercase, replace non-alphanumeric with _
+    set -l key (string upper $org | string replace -ra '[^A-Z0-9]' '_')
+    set -l varname "GITHUB_TOKEN_ORG_$key"
+    # Indirect env lookup via `env` output (fish has no $$ expansion)
+    set -l val (env | string replace --filter --regex "^$varname=(.*)" '$1')
+    if test -n "$val"
+        echo $val
+    else if set -q GITHUB_TOKEN_ORG
+        echo $GITHUB_TOKEN_ORG
+    else if set -q GITHUB_TOKEN
+        echo $GITHUB_TOKEN
+    end
+end
 
 function _ghrepo_fetch --argument-names org
     set -l args repo list --limit 1000 --json nameWithOwner,sshUrl,description,isPrivate,isArchived,updatedAt
     if test -n "$org"
         set args repo list $org --limit 1000 --json nameWithOwner,sshUrl,description,isPrivate,isArchived,updatedAt
     end
+    set -lx GH_TOKEN (_ghrepo_token $org)
     gh $args 2>/dev/null \
         | jq -r '.[] | [
             .nameWithOwner,
