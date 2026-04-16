@@ -5,28 +5,12 @@ echo "════════════════════════�
 echo "  post-create"
 echo "════════════════════════════════════════"
 
-<<<<<<< HEAD
-# ── Install fish ──────────────────────────────────────────────────────────────
-# Remove the yarn apt source if present — its GPG key is expired and breaks
-# apt-get update on older universal images.
-# sudo rm -f /etc/apt/sources.list.d/yarn.list
-# sudo apt-get update -y -qq
-# sudo apt-get install -y -qq fish
-||||||| parent of ad70a41 (update base image)
-# ── Install fish ──────────────────────────────────────────────────────────────
-# Remove the yarn apt source if present — its GPG key is expired and breaks
-# apt-get update on older universal images.
-sudo rm -f /etc/apt/sources.list.d/yarn.list
-sudo apt-get update -y -qq
-sudo apt-get install -y -qq fish
-=======
 # ── APT config ────────────────────────────────────────────────────────────────
 echo 'APT::Acquire::Retries "3";' | sudo tee /etc/apt/apt.conf.d/80retries > /dev/null
 sudo apt-get update -y -qq
 
 # ── Install fish ──────────────────────────────────────────────────────────────
 sudo apt-get install -y -qq fish
->>>>>>> ad70a41 (update base image)
 
 # ── Remove default zsh files from home (ZDOTDIR=~/.config/zsh handles config) ─
 rm -f "$HOME/.zshrc" "$HOME/.zprofile" "$HOME/.zlogin" "$HOME/.zlogout"
