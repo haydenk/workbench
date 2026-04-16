@@ -1,4 +1,6 @@
-# workbench
+<p align="center">
+  <img src="workbench-preview.png" alt="workbench preview" />
+</p>
 
 A GitHub Codespaces devcontainer for general-purpose terminal, scripting, and DevOps work. Opens a fully configured Linux environment with your dotfiles, cloud CLIs, and Docker — ready in seconds.
 
