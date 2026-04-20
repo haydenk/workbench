@@ -56,23 +56,16 @@ Treat the Codespace as just another machine on your tailnet. Echo connects to th
 **One-time setup:**
 
 1. Install the **Tailscale** iPad app; sign in. (WireGuard works the same way if you run your own coordinator.)
-2. In Tailscale admin, generate a reusable auth key (Settings → Keys → *Generate auth key* → enable *Reusable* and *Ephemeral*). Save it as a **Codespaces user secret** named `TAILSCALE_AUTHKEY` at <https://github.com/settings/codespaces>.
-3. Add a block to your dotfiles' `post-create` (or a Codespace lifecycle hook) that starts Tailscale if the secret is present:
-   ```bash
-   if [[ -n "${TAILSCALE_AUTHKEY:-}" ]] && ! command -v tailscale &>/dev/null; then
-     curl -fsSL https://tailscale.com/install.sh | sh
-     sudo tailscale up --authkey="$TAILSCALE_AUTHKEY" --ssh --hostname="codespace-$(hostname)" --ephemeral
-   fi
-   ```
-   `--ssh` enables Tailscale SSH (no keys to manage, auth is handled by Tailscale). `--ephemeral` makes the node auto-clean when the Codespace stops.
-4. Rely on Tailscale SSH — the `--ssh` flag is enough; you don't need a traditional sshd.
+2. In Tailscale admin, generate a reusable auth key (Settings → Keys → *Generate auth key* → enable *Reusable* and *Ephemeral*). Save it as a **Codespaces user secret** named `TS_AUTH_KEY` at <https://github.com/settings/codespaces>.
+3. Tailscale is already wired in — the `ghcr.io/tailscale/codespace/tailscale` devcontainer feature installs `tailscale`/`tailscaled` and, on container start, auto-runs `tailscale up --accept-routes --authkey=$TS_AUTH_KEY --hostname=$CODESPACE_NAME` when the secret is present. Nothing to add to your dotfiles.
+4. *(Optional — Tailscale SSH, no keys to manage)* The auto-run doesn't pass `--ssh`. To enable it, re-run once after the Codespace starts: `sudo tailscale up --ssh --accept-routes --authkey="$TS_AUTH_KEY" --hostname="$CODESPACE_NAME"`. Without this, use a normal SSH key in `~/.ssh/authorized_keys` instead.
 
 **Connecting from Echo:**
 
 1. Open Echo → **New host** (or "+" / "New connection")
-2. **Host**: the Codespace's tailnet name, e.g. `codespace-hostname` (whatever you passed to `--hostname`) — or its `100.x.y.z` tailnet IP from the Tailscale app
+2. **Host**: the Codespace's tailnet name (defaults to `$CODESPACE_NAME`) — or its `100.x.y.z` tailnet IP from the Tailscale app
 3. **User**: `vscode` (the default Codespaces user)
-4. **Auth**: Tailscale SSH handles identity — no key/password needed if the iPad is signed into the same tailnet
+4. **Auth**: Tailscale SSH handles identity if you enabled `--ssh` in step 4 above — otherwise provide a key that matches `~/.ssh/authorized_keys`
 5. **Save** and tap to connect
 
 Stays working across Wi-Fi ↔ cellular because Tailscale/WireGuard handles the roaming; SSH sees a stable virtual IP.
