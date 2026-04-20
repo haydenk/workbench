@@ -61,6 +61,7 @@
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.fontFamily": "'JetBrains Mono', 'Fira Code', 'Cascadia Code', Menlo, Consolas, monospace",
         "terminal.integrated.fontSize": 15,
         "editor.fontFamily": "'JetBrains Mono', 'Fira Code', 'Cascadia Code', Menlo, Consolas, monospace",
         "editor.fontLigatures": true,
