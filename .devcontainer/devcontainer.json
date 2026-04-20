@@ -16,9 +16,17 @@
     "ghcr.io/devcontainers/features/git-lfs:1": {},
     // Docker socket wiring
     "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "version": "latest",
       "moby": true,
       "dockerDashComposeVersion": "latest"
     }
+  },
+
+  // ─── Environment ────────────────────────────────────────────────────────────
+  // Map the Codespaces secret GH_PAT → GITHUB_TOKEN for every interactive shell.
+  // Reaches zsh/fish/bash terminals without needing per-shell rc edits.
+  "remoteEnv": {
+    "GITHUB_TOKEN": "${containerEnv:GH_PAT}"
   },
 
   // ─── Lifecycle scripts ──────────────────────────────────────────────────────
@@ -64,10 +72,10 @@
   },
 
   "hostRequirements": {
-    "cpus": 8,
-    "memory": "32gb",
-    "storage": "64gb"
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "32gb"
   },
 
-  "postAttachCommand": "echo '✓ workbench ready'"
+  "postAttachCommand": "printf '\\n✓ workbench ready\\n  ghrepo        fuzzy-clone any repo you have access to\\n  mise install  install a repo\\u2019s pinned runtimes\\n  gh auth status  verify GitHub auth\\n\\n'"
 }

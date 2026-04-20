@@ -1,0 +1,13 @@
+version: 2
+updates:
+  # Keep devcontainer features (common-utils, github-cli, git-lfs,
+  # docker-outside-of-docker) up to date.
+  - package-ecosystem: "devcontainers"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "devcontainer"
+    labels:
+      - "dependencies"
+      - "devcontainer"

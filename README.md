@@ -2,20 +2,36 @@
   <img src="workbench-preview.png" alt="workbench preview" />
 </p>
 
+<p align="center">
+  <a href="https://codespaces.new/haydenk/workbench?quickstart=1">
+    <img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces" />
+  </a>
+</p>
+
 A GitHub Codespaces devcontainer for general-purpose terminal, scripting, and DevOps work. Opens a fully configured Linux environment with your dotfiles, cloud CLIs, and Docker — ready in seconds.
 
-> **Note:** This project is designed and tested specifically for **GitHub Codespaces**. While the devcontainer spec is technically portable, features like dotfiles integration, Codespaces secrets (`GITHUB_TOKEN`), and machine type requirements (`premiumLinux`) are GitHub Codespaces-specific and will not work as expected in other devcontainer environments (e.g., VS Code Dev Containers running locally).
+> **Note:** Designed and tested specifically for **GitHub Codespaces**. While the devcontainer spec is technically portable, features like dotfiles integration, Codespaces secrets (`GH_PAT`), and host requirements are Codespaces-specific and won't work as expected in other devcontainer environments (e.g. local VS Code Dev Containers).
 
 ## Getting started
 
-1. Create a new Codespace from this repo
-2. Codespaces automatically installs your dotfiles via `setup.sh`
-3. `post-create.sh` runs `dotfiles_bootstrap` and installs shell functions
+1. Click the *Open in GitHub Codespaces* badge (or create one manually from this repo)
+2. Codespaces installs your dotfiles automatically
+3. `post-create.sh` installs `fish` and wires up the `ghrepo` shell function
+4. `post-attach` prints a short next-steps hint in your terminal
 
 Configure once in your GitHub settings:
 
-- **Dotfiles**: github.com/settings/codespaces → set your dotfiles repo
-- **Secrets**: set `GH_PAT` (personal PAT) and optionally org-specific secrets to enable `ghrepo` — see [Creating a PAT](#creating-a-pat) below
+- **Dotfiles**: [github.com/settings/codespaces](https://github.com/settings/codespaces) → set your dotfiles repo
+- **Secrets**: set `GH_PAT` (personal PAT) and optionally org-specific secrets to enable `ghrepo` — see [docs/secrets.md](docs/secrets.md)
+
+## Documentation
+
+| Topic | Doc |
+|---|---|
+| Generating PATs and storing Codespaces secrets | [docs/secrets.md](docs/secrets.md) |
+| `ghrepo` — fuzzy-search and clone any repo | [docs/ghrepo.md](docs/ghrepo.md) |
+| Prebuilds, machine size, idle/retention, Dependabot auto-merge | [docs/codespaces.md](docs/codespaces.md) |
+| Using this Codespace from iPadOS (Safari PWA, Echo, Tailscale) | [docs/ipad.md](docs/ipad.md) |
 
 ## What's included
 
@@ -33,7 +49,7 @@ Configure once in your GitHub settings:
 | docker-outside-of-docker | Docker socket wiring for compose and builds |
 | fish | Friendly shell — installed via `post-create.sh` |
 
-> **Note:** Runtimes and cloud CLIs (kubectl, helm, AWS, gcloud, Azure, etc.) are not pre-installed. Add them via mise when needed — e.g. `mise use -g aqua:aws-cli` or add to a repo's `mise.toml`.
+> Runtimes and cloud CLIs (kubectl, helm, AWS, gcloud, Azure, etc.) are not pre-installed. Add them via mise when needed — e.g. `mise use -g aqua:aws-cli` or add to a repo's `mise.toml`.
 
 ### Added by dotfiles (`dotfiles_bootstrap`)
 
@@ -63,98 +79,6 @@ Your dotfiles provide:
 
 Repos cloned into this workspace bring their own `mise.toml`. Run `mise install` inside any repo to get its required runtimes and tools (terraform, rust, specific node/python versions, etc.).
 
-## Creating a PAT
-
-`ghrepo` authenticates to the GitHub API using Personal Access Tokens stored as Codespaces secrets.
-
-> **Note on fine-grained PATs:** Fine-grained tokens are scoped to a single resource owner (your personal account **or** one organization). If you want `ghrepo` to search both your personal repos and an org's repos, you need two tokens — one per owner — stored as separate secrets (`GH_PAT` and `GH_TOKEN_ORG`). Classic tokens can cover both with a single token using the `read:org` scope.
-
-### 1. Generate the token(s)
-
-Go to **github.com/settings/tokens** and choose one of:
-
-- **Classic token** (simpler, one token covers everything): click *Generate new token (classic)*
-- **Fine-grained token** (more restrictive, one token per owner): click *Generate new token (beta)*
-
-**Classic token — required scopes:**
-
-| Scope | Why |
-|---|---|
-| `repo` | Read access to your private repositories |
-| `read:org` | List repositories in organizations you belong to |
-
-**Fine-grained token — required permissions:**
-
-Create one token for your personal account and one for each org you want to search.
-
-| Permission | Access level | Why |
-|---|---|---|
-| Repository access | *All repositories* (or select specific repos) | Allows listing repos |
-| Contents | Read-only | Required by the repos permission |
-| Members | Read-only (org tokens only) | List org members/repos |
-
-Set an expiration that fits your workflow (90 days is a reasonable default), then copy the generated token — you won't see it again.
-
-### 2. Add as Codespaces secrets
-
-You can store secrets at the **user level** (available to all your codespaces) or at the **repository level** (only available inside codespaces for this repo).
-
-> **Note on secret naming:** GitHub Codespaces reserves environment variables starting with `GITHUB_` and won't let you store secrets with that prefix. All secrets use the `GH_` prefix instead. `post-start.sh` maps `GH_PAT` → `GITHUB_TOKEN` on every container start so the `gh` CLI picks it up automatically.
-
-| Secret name | Value | Required |
-|---|---|---|
-| `GH_PAT` | Personal account PAT (or classic token) | Yes |
-| `GH_TOKEN_ORG_<NAME>` | Org-specific PAT, e.g. `GH_TOKEN_ORG_MYCOMPANY` | One per org (fine-grained) |
-| `GH_TOKEN_ORG` | Generic org PAT fallback | Optional |
-
-`ghrepo` uses `GH_PAT` (via `GITHUB_TOKEN`) for personal repo lookups. When you pass `-o <org>`, it resolves the token in this order:
-
-1. `GH_TOKEN_ORG_<ORGNAME>` — org-specific (e.g. `GH_TOKEN_ORG_MYCOMPANY` for org `mycompany`)
-2. `GH_TOKEN_ORG` — generic org fallback
-3. `GITHUB_TOKEN` — personal / classic token (set from `GH_PAT` at startup)
-
-The `<ORGNAME>` suffix is the org name uppercased with non-alphanumeric characters replaced by `_`. You can have as many org-specific secrets as you need — one per org.
-
-**User-level (recommended):**
-
-1. Go to **github.com/settings/codespaces**
-2. Under *Secrets*, click **New secret**
-3. Set the name and value for each secret above
-4. Under *Repository access*, select **this repository** (workbench) plus any other repos where you want it available
-5. Click **Add secret**
-
-**Repository-level:**
-
-1. Go to this repo → **Settings → Secrets and variables → Codespaces**
-2. Click **New repository secret**
-3. Add each secret by name and value
-4. Click **Add secret**
-
-Once secrets are saved, Codespaces injects them as environment variables when the container starts. No restart is needed if you set them before creating the Codespace; if you add them after, rebuild the container (`Codespaces: Rebuild Container` from the VS Code command palette).
-
-> **Note:** GitHub automatically injects `GITHUB_TOKEN` into Codespaces, but it is scoped only to the codespace's own repository. `GH_PAT` is required to access your personal repos and org repos. `post-start.sh` maps `GH_PAT` → `GITHUB_TOKEN` on every container start so the `gh` CLI picks it up automatically.
-
-## ghrepo
-
-Fuzzy-search your GitHub repos and clone any on demand. Available in both zsh and fish. Clones via HTTPS using your PAT — no SSH key required.
-
-```
-ghrepo                     # fzf picker → clone to ~/repos/<owner>/<repo>
-ghrepo <query>             # pre-filtered search
-ghrepo -o <org> [query]    # include an org's repos (uses GH_TOKEN_ORG_<NAME>)
-ghrepo -d <path> [query]   # clone to a specific path
-ghrepo list [query]        # print matches without cloning
-```
-
-Inside the fzf picker:
-- `ENTER` — clone selected repo
-- `CTRL-O` — open repo in browser
-- `ESC` — cancel
-
-Cloned repos land in `~/repos/<owner>/<repo>` by default. Set `GHREPO_DIR` to change the base path.
-
-When cloning, `ghrepo` resolves the right token for the repo owner: `GH_TOKEN_ORG_<NAME>` for orgs, `GITHUB_TOKEN` (from `GH_PAT`) for personal repos. The appropriate token is passed to `gh repo clone` at clone time, so each owner's repos are cloned with the correct credentials.
-
 ## VS Code extensions
 
 | Extension | Purpose |
@@ -170,10 +94,21 @@ When cloning, `ghrepo` resolves the right token for the repo owner: `GH_TOKEN_OR
 
 ```
 .devcontainer/
-├── devcontainer.json     # container definition
+├── devcontainer.json       # container definition
 └── scripts/
-    ├── post-create.sh    # runs once on container creation
-    ├── post-start.sh     # runs on every container start
-    ├── ghrepo.zsh        # ghrepo function for zsh
-    └── ghrepo.fish       # ghrepo function for fish
+    ├── post-create.sh      # runs once on container creation
+    ├── post-start.sh       # runs on every container start
+    ├── ghrepo.zsh          # ghrepo function for zsh
+    └── ghrepo.fish         # ghrepo function for fish
+
+.github/
+├── dependabot.yml          # weekly devcontainer feature updates
+└── workflows/
+    └── dependabot-auto-merge.yml  # patch/minor auto-merge
+
+docs/
+├── secrets.md              # PATs + Codespaces secrets
+├── ghrepo.md               # ghrepo usage
+├── codespaces.md           # prebuilds, machine size, timeouts
+└── ipad.md                 # iPadOS workflow
 ```

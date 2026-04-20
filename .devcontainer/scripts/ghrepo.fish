@@ -81,8 +81,20 @@ function ghrepo --description "Fuzzy-search GitHub repos and clone on demand"
         echo "No repos found." >&2; return 1
     end
 
-    # Pick with fzf
     set -l query (string join ' ' $argv)
+
+    # list mode: print matches, skip the interactive picker
+    if set -q _flag_list
+        if test -n "$query"
+            string join \n $all_repos \
+                | awk -F'\t' -v q="$query" 'tolower($1) ~ tolower(q) {print $1}'
+        else
+            string join \n $all_repos | awk -F'\t' '{print $1}'
+        end
+        return 0
+    end
+
+    # Pick with fzf
     set -l selected (string join \n $all_repos \
         | awk -F'\t' '{printf "%s  %-12s  %-45s  %s\n", $2, $4, $1, $3}' \
         | fzf --ansi \
@@ -96,10 +108,6 @@ function ghrepo --description "Fuzzy-search GitHub repos and clone on demand"
         | awk '{print $3}')
 
     test -z "$selected"; and return 0
-
-    if set -q _flag_list
-        echo $selected; return 0
-    end
 
     # Clone
     set -l parts (string split / $selected)

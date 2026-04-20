@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-set -euox pipefail
+set -euo pipefail
 # Runs on every container start. Keep fast.
-
-# Map Codespace secrets (can't start with GITHUB_) to the names gh CLI expects.
-export GITHUB_TOKEN="${GH_PAT:-}"
+#
+# Note: GH_PAT is mapped to GITHUB_TOKEN via `remoteEnv` in devcontainer.json,
+# so interactive shells pick it up automatically — no export needed here.
 
 if command -v gh &>/dev/null && ! gh auth status &>/dev/null 2>&1; then
   echo ""

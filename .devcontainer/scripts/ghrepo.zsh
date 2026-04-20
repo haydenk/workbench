@@ -37,6 +37,16 @@ function ghrepo() {
   fi
   [[ -z "$all_repos" ]] && { echo "No repos found." >&2; return 1; }
 
+  # list mode: print matches, skip the interactive picker
+  if $list_only; then
+    if [[ -n "$query" ]]; then
+      echo "$all_repos" | awk -F'\t' -v q="$query" 'tolower($1) ~ tolower(q) {print $1}'
+    else
+      echo "$all_repos" | awk -F'\t' '{print $1}'
+    fi
+    return 0
+  fi
+
   local selected
   selected=$(echo "$all_repos" \
     | awk -F'\t' '{printf "%s  %-12s  %-45s  %s\n", $2, $4, $1, $3}' \
@@ -51,7 +61,6 @@ function ghrepo() {
     | awk '{print $3}') || return 0
 
   [[ -z "$selected" ]] && return 0
-  $list_only && { echo "$selected"; return 0; }
 
   local owner repo target
   owner="${selected%%/*}"
