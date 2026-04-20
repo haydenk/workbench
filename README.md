@@ -47,7 +47,7 @@ Configure once in your GitHub settings:
 | github-cli | `gh` CLI |
 | git-lfs | Large file support |
 | docker-outside-of-docker | Docker socket wiring for compose and builds |
-| tailscale | Installs `tailscale`/`tailscaled`; auto-joins your tailnet when the `TS_AUTH_KEY` Codespaces secret is set |
+| tailscale | Installs `tailscale`/`tailscaled`; auto-joins your tailnet when the `TAILSCALE_AUTHKEY` Codespaces secret is set |
 | fish | Friendly shell — installed via `post-create.sh` |
 
 > Runtimes and cloud CLIs (kubectl, helm, AWS, gcloud, Azure, etc.) are not pre-installed. Add them via mise when needed — e.g. `mise use -g aqua:aws-cli` or add to a repo's `mise.toml`.

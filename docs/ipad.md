@@ -56,9 +56,9 @@ Treat the Codespace as just another machine on your tailnet. Echo connects to th
 **One-time setup:**
 
 1. Install the **Tailscale** iPad app; sign in. (WireGuard works the same way if you run your own coordinator.)
-2. In Tailscale admin, generate a reusable auth key (Settings → Keys → *Generate auth key* → enable *Reusable* and *Ephemeral*). Save it as a **Codespaces user secret** named `TS_AUTH_KEY` at <https://github.com/settings/codespaces>.
-3. Tailscale is already wired in — the `ghcr.io/tailscale/codespace/tailscale` devcontainer feature installs `tailscale`/`tailscaled` and, on container start, auto-runs `tailscale up --accept-routes --authkey=$TS_AUTH_KEY --hostname=$CODESPACE_NAME` when the secret is present. Nothing to add to your dotfiles.
-4. *(Optional — Tailscale SSH, no keys to manage)* The auto-run doesn't pass `--ssh`. To enable it, re-run once after the Codespace starts: `sudo tailscale up --ssh --accept-routes --authkey="$TS_AUTH_KEY" --hostname="$CODESPACE_NAME"`. Without this, use a normal SSH key in `~/.ssh/authorized_keys` instead.
+2. In Tailscale admin, generate a reusable auth key (Settings → Keys → *Generate auth key* → enable *Reusable* and *Ephemeral*). Save it as a **Codespaces user secret** named `TAILSCALE_AUTHKEY` at <https://github.com/settings/codespaces>.
+3. Tailscale is already wired in — the `ghcr.io/tailscale/codespace/tailscale` devcontainer feature installs `tailscale`/`tailscaled` and, on container start, auto-runs `tailscale up --accept-routes --authkey=$TAILSCALE_AUTHKEY --hostname=$CODESPACE_NAME` when the secret is present. Nothing to add to your dotfiles.
+4. *(Optional — Tailscale SSH, no keys to manage)* The auto-run doesn't pass `--ssh`. To enable it, re-run once after the Codespace starts: `sudo tailscale up --ssh --accept-routes --authkey="$TAILSCALE_AUTHKEY" --hostname="$CODESPACE_NAME"`. Without this, use a normal SSH key in `~/.ssh/authorized_keys` instead.
 
 **Connecting from Echo:**
 
