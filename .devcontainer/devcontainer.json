@@ -19,8 +19,11 @@
       "version": "latest",
       "moby": true,
       "dockerDashComposeVersion": "latest"
-    }
+    },
+    "ghcr.io/tailscale/codespace/tailscale": {}
   },
+
+  "runArgs": ["--device=/dev/net/tun"],
 
   // ─── Environment ────────────────────────────────────────────────────────────
   // Map the Codespaces secret GH_PAT → GITHUB_TOKEN for every interactive shell.
