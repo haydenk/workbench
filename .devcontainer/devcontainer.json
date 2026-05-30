@@ -20,7 +20,7 @@
       "moby": true,
       "dockerDashComposeVersion": "latest"
     },
-    "ghcr.io/tailscale/codespace/tailscale": {}
+    "ghcr.io/tailscale/codespace/tailscale:1": {}
   },
 
   "runArgs": ["--device=/dev/net/tun"],
@@ -44,19 +44,24 @@
         "mads-hartmann.bash-ide-vscode",
         "foxundermoon.shell-format",
         "timonwong.shellcheck",
-        // Git
+        "bmalehorn.vscode-fish",
+        // Git + GitHub
         "eamodio.gitlens",
         "mhutchie.git-graph",
-        // General
+        "github.vscode-github-actions",
+        // Config + docs
         "redhat.vscode-yaml",
         "tamasfe.even-better-toml",
         "ms-azuretools.vscode-docker",
         "EditorConfig.EditorConfig",
+        "davidanson.vscode-markdownlint",
+        // Productivity
         "usernamehw.errorlens",
-        "zhuangtongfa.material-theme",
-        "pkief.material-icon-theme",
+        "christian-kohler.path-intellisense",
+        "streetsidesoftware.code-spell-checker",
+        "gruntfuggly.todo-tree",
         // AI
-        "anthropic.claude-vscode",
+        "anthropic.claude-code",
         "github.copilot"
       ],
       "settings": {

@@ -1,7 +1,7 @@
 version: 2
 updates:
   # Keep devcontainer features (common-utils, github-cli, git-lfs,
-  # docker-outside-of-docker) up to date.
+  # docker-outside-of-docker, tailscale) up to date.
   - package-ecosystem: "devcontainers"
     directory: "/"
     schedule:
@@ -11,3 +11,15 @@ updates:
     labels:
       - "dependencies"
       - "devcontainer"
+
+  # Keep GitHub Actions pins (actions/checkout, devcontainers/ci, etc.)
+  # current. Auto-merge workflow handles patch/minor for both ecosystems.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "actions"
+    labels:
+      - "dependencies"
+      - "github-actions"

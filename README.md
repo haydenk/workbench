@@ -32,6 +32,7 @@ Configure once in your GitHub settings:
 | `ghrepo` — fuzzy-search and clone any repo | [docs/ghrepo.md](docs/ghrepo.md) |
 | Prebuilds, machine size, idle/retention, Dependabot auto-merge | [docs/codespaces.md](docs/codespaces.md) |
 | Using this Codespace from iPadOS (Safari PWA, Echo, Tailscale) | [docs/ipad.md](docs/ipad.md) |
+| Where to put what tool — `mise` recipes for runtimes, AI CLIs, cloud CLIs | [docs/mise.md](docs/mise.md) |
 
 ## What's included
 
@@ -94,12 +95,14 @@ Repos cloned into this workspace bring their own `mise.toml`. Run `mise install`
 
 | Extension | Purpose |
 |---|---|
-| bash-ide, shell-format, shellcheck | Shell script editing and linting |
-| GitLens, git-graph | Git history and blame |
+| bash-ide, shell-format, shellcheck, vscode-fish | Shell script editing + linting (bash, sh, fish) |
+| GitLens, git-graph, vscode-github-actions | Git history, blame, workflow editing |
 | vscode-yaml, even-better-toml | Config file editing |
+| markdownlint | Markdown linting for the docs |
 | vscode-docker | Docker integration |
-| errorlens | Inline error display |
-| Material Theme + Icons | UI theme |
+| errorlens, path-intellisense, todo-tree, EditorConfig | Editor productivity + style |
+| code-spell-checker | Catches typos in docs and code |
+| Claude Code, GitHub Copilot | AI assistants |
 
 ## Structure
 
@@ -124,5 +127,6 @@ docs/
 ├── secrets.md              # PATs + Codespaces secrets
 ├── ghrepo.md               # ghrepo usage
 ├── codespaces.md           # prebuilds, machine size, timeouts
-└── ipad.md                 # iPadOS workflow
+├── ipad.md                 # iPadOS workflow
+└── mise.md                 # mise recipes: where to put each tool
 ```

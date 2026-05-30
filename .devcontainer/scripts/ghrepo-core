@@ -19,13 +19,25 @@ set -eu
 cmd_fetch() {
   limit="${GHREPO_LIMIT:-1000}"
   src="${1:-personal}"
+  # Capture gh output (stderr merged) so we can distinguish "fetch failed" from
+  # "fetch succeeded with zero results" — silently treating both as "no repos"
+  # was the old footgun on auth failures.
   if [ -n "${1:-}" ]; then
-    gh repo list "$1" --limit "$limit" \
-      --json nameWithOwner,description,isPrivate,isArchived,updatedAt 2>/dev/null
+    raw=$(gh repo list "$1" --limit "$limit" \
+      --json nameWithOwner,description,isPrivate,isArchived,updatedAt 2>&1) || {
+      echo "ghrepo-core: gh repo list failed for $src — check 'gh auth status':" >&2
+      echo "$raw" >&2
+      return 1
+    }
   else
-    gh repo list --limit "$limit" \
-      --json nameWithOwner,description,isPrivate,isArchived,updatedAt 2>/dev/null
-  fi | jq -r '.[] | [
+    raw=$(gh repo list --limit "$limit" \
+      --json nameWithOwner,description,isPrivate,isArchived,updatedAt 2>&1) || {
+      echo "ghrepo-core: gh repo list failed for $src — check 'gh auth status':" >&2
+      echo "$raw" >&2
+      return 1
+    }
+  fi
+  printf '%s' "$raw" | jq -r '.[] | [
       .nameWithOwner,
       (if .isPrivate then "🔒" else "🌐" end),
       (if .isArchived then "[archived] " else "" end) + (.description // ""),

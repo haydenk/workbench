@@ -44,19 +44,36 @@ jobs:
       - name: Syntax check
         run: fish -n .devcontainer/scripts/ghrepo.fish
 
-  devcontainer-smoke:
-    name: devcontainer build + ghrepo loads in both shells
+  actionlint:
+    name: actionlint (lint workflow YAML + embedded run blocks)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build container and exercise both shells
+      - name: Lint workflow files
+        uses: raven-actions/actionlint@v2
+
+  devcontainer-smoke:
+    name: devcontainer build + ghrepo loads via real bootstrap
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build container and exercise the real bootstrap chain
         uses: devcontainers/ci@v0.3
         with:
           runCmd: |
             set -e
             echo "── ghrepo-core on PATH ──"
             command -v ghrepo-core
-            echo "── ghrepo function defined in zsh ──"
-            zsh -c 'source "$HOME/.config/zsh/ghrepo.zsh" && type ghrepo'
-            echo "── ghrepo function defined in fish ──"
-            fish -c 'source "$HOME/.config/fish/conf.d/ghrepo.fish"; functions -q ghrepo; or exit 1'
+
+            echo "── ~/.zshenv sets ZDOTDIR (Issue #2 bootstrap) ──"
+            test -f "$HOME/.zshenv" || { echo "FAIL: ~/.zshenv missing" >&2; exit 1; }
+            grep -q ZDOTDIR "$HOME/.zshenv" || { echo "FAIL: ~/.zshenv has no ZDOTDIR" >&2; exit 1; }
+
+            echo "── ghrepo defined in a fresh interactive zsh (full bootstrap) ──"
+            # `-i` makes zsh read .zshenv → $ZDOTDIR/.zshrc, which is what a real
+            # Codespaces terminal does. A wrapper that loads only when explicitly
+            # sourced (the previous test) would have hidden any ZDOTDIR regression.
+            zsh -ic 'type ghrepo > /dev/null' || { echo "FAIL: ghrepo not defined in interactive zsh" >&2; exit 1; }
+
+            echo "── ghrepo defined in fish (conf.d/ auto-sourced) ──"
+            fish -c 'functions -q ghrepo' || { echo "FAIL: ghrepo not defined in fish" >&2; exit 1; }
