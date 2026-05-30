@@ -82,7 +82,7 @@ These come from the maintainer's personal dotfiles repo, not this repo — a for
 | Claude CLI | Anthropic's Claude in the terminal |
 
 > [!NOTE]
-> dotfiles may also install `ripgrep`; the workbench's apt-installed `/usr/bin/rg` is what the Todo Tree extension binds to, while a dotfiles-installed `rg` (typically at `~/.local/bin/rg` or similar) takes PATH precedence in interactive shells.
+> Dotfiles may also install `ripgrep`; the workbench's apt-installed `/usr/bin/rg` is what the Todo Tree extension binds to, while a dotfiles-installed `rg` (typically at `~/.local/bin/rg` or similar) takes PATH precedence in interactive shells.
 
 ### Shell configuration
 
