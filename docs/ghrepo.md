@@ -86,5 +86,5 @@ Surfaces `~/repos` under the already-open workspace root without moving anything
 ## Implementation notes
 
 - Clones use `--filter=blob:none` for a partial clone — files are fetched on demand as you check out branches, which is noticeably faster for large repos.
-- `ghrepo list` is non-interactive; it skips fzf and just prints matching `owner/repo` lines, so it's safe to pipe.
-- The zsh and fish versions are kept in sync at `.devcontainer/scripts/ghrepo.{zsh,fish}` and installed into `~/.config/zsh/` and `~/.config/fish/conf.d/` respectively by `post-create.sh`.
+- `ghrepo list` (also `-l`/`--list`) is non-interactive; it skips fzf and prints matching `owner/repo` lines using case-insensitive substring matching, so it's safe to pipe.
+- Each shell ships a thin wrapper (`ghrepo.zsh`, `ghrepo.fish`) that handles argument parsing, token resolution, and the fzf picker. The `gh` + `jq` + `git` plumbing lives once in a POSIX `sh` helper, `ghrepo-core`. `post-create.sh` installs `ghrepo-core` to `/usr/local/bin/` and copies the wrappers to `~/.config/zsh/` and `~/.config/fish/conf.d/`.

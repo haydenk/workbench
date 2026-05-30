@@ -48,11 +48,21 @@ Configure once in your GitHub settings:
 | git-lfs | Large file support |
 | docker-outside-of-docker | Docker socket wiring for compose and builds |
 | tailscale | Installs `tailscale`/`tailscaled`; auto-joins your tailnet when the `TAILSCALE_AUTHKEY` Codespaces secret is set |
-| fish | Friendly shell — installed via `post-create.sh` |
 
 > Runtimes and cloud CLIs (kubectl, helm, AWS, gcloud, Azure, etc.) are not pre-installed. Add them via mise when needed — e.g. `mise use -g aqua:aws-cli` or add to a repo's `mise.toml`.
 
+### Installed by `post-create.sh`
+
+| Tool | Purpose |
+|---|---|
+| `fish` | Friendly shell (apt install) |
+| `ghrepo` | Fuzzy-search GitHub repos and clone — see [docs/ghrepo.md](docs/ghrepo.md) |
+| `ghrepo-core` | POSIX-sh helper both shell wrappers call into for the `gh` + `jq` + `git` plumbing |
+| `~/.zshenv` | Sets `ZDOTDIR=~/.config/zsh` so zsh reads its config from XDG (skipped if your dotfiles already set it) |
+
 ### Added by dotfiles (`dotfiles_bootstrap`)
+
+These come from the maintainer's personal dotfiles repo, not this repo — a fork using different dotfiles will get whatever those provide instead. Listed here for context.
 
 | Tool | Purpose |
 |---|---|
@@ -99,12 +109,15 @@ Repos cloned into this workspace bring their own `mise.toml`. Run `mise install`
 └── scripts/
     ├── post-create.sh      # runs once on container creation
     ├── post-start.sh       # runs on every container start
-    ├── ghrepo.zsh          # ghrepo function for zsh
-    └── ghrepo.fish         # ghrepo function for fish
+    ├── ghrepo-core         # POSIX-sh plumbing for ghrepo (fetch + clone)
+    ├── ghrepo.zsh          # zsh wrapper around ghrepo-core
+    └── ghrepo.fish         # fish wrapper around ghrepo-core
 
 .github/
+├── FUNDING.yml             # Sponsor button config
 ├── dependabot.yml          # weekly devcontainer feature updates
 └── workflows/
+    ├── ci.yml              # shellcheck + zsh/fish syntax + devcontainer smoke test
     └── dependabot-auto-merge.yml  # patch/minor auto-merge
 
 docs/
