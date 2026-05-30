@@ -27,10 +27,18 @@ On mobile it's very easy to leave tabs open and burn core-hours. Set sensible de
 
 ## Dependabot auto-merge
 
-The repo ships a workflow at `.github/workflows/dependabot-auto-merge.yml` that auto-approves and enables auto-merge on Dependabot PRs for **patch and minor** updates of devcontainer features. Majors stay manual.
+The repo ships a workflow at `.github/workflows/dependabot-auto-merge.yml` that auto-approves and enables auto-merge on Dependabot PRs for **patch and minor** updates across both ecosystems Dependabot tracks here:
 
-For this to actually merge PRs you need to flip one toggle in the GitHub UI:
+- `devcontainers` — feature versions in `devcontainer.json`
+- `github-actions` — action pins inside `.github/workflows/*.yml`
+
+Majors stay manual.
+
+For the workflow to actually approve and merge PRs, two GitHub UI toggles need to be on:
 
 - **Settings → General → Pull Requests → Allow auto-merge** → enable
+- **Settings → Actions → General → Workflow permissions → Allow GitHub Actions to create and approve pull requests** → enable
+
+Without the second toggle, `gh pr review --approve` silently no-ops and Dependabot PRs sit waiting for an approval that never comes.
 
 No additional secrets required — the workflow uses the default `GITHUB_TOKEN`.

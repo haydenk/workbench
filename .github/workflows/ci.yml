@@ -10,6 +10,11 @@ on:
     branches: [master]
   workflow_dispatch:
 
+# Cancel superseded runs on PR branches; let master and manual runs finish.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   shellcheck:
     name: shellcheck (bash + POSIX sh)

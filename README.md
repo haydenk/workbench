@@ -51,6 +51,7 @@ Configure once in your GitHub settings:
 | docker-outside-of-docker | Docker socket wiring for compose and builds |
 | tailscale | Installs `tailscale`/`tailscaled`; auto-joins your tailnet when the `TAILSCALE_AUTHKEY` Codespaces secret is set |
 
+> [!TIP]
 > Runtimes and cloud CLIs (kubectl, helm, AWS, gcloud, Azure, etc.) are not pre-installed. Add them via mise when needed — e.g. `mise use -g aqua:aws-cli` or add to a repo's `mise.toml`.
 
 ### Installed by `post-create.sh`
