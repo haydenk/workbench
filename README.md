@@ -81,7 +81,8 @@ These come from the maintainer's personal dotfiles repo, not this repo — a for
 | qsv | CSV toolkit |
 | Claude CLI | Anthropic's Claude in the terminal |
 
-> Note: dotfiles may also install `ripgrep`; the workbench's apt-installed `/usr/bin/rg` is what the Todo Tree extension binds to, while a dotfiles-installed `rg` (typically at `~/.local/bin/rg` or similar) takes PATH precedence in interactive shells.
+> [!NOTE]
+> dotfiles may also install `ripgrep`; the workbench's apt-installed `/usr/bin/rg` is what the Todo Tree extension binds to, while a dotfiles-installed `rg` (typically at `~/.local/bin/rg` or similar) takes PATH precedence in interactive shells.
 
 ### Shell configuration
 

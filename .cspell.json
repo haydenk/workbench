@@ -11,7 +11,8 @@
   ],
   "ignoreRegExpList": [
     "/```[\\s\\S]*?```/g",
-    "/`[^`]+`/g"
+    "/`[^`]+`/g",
+    "/\\b[0-9a-f]{40}\\b/g"
   ],
   "words": [
     "actionlint",
