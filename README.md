@@ -58,7 +58,7 @@ Configure once in your GitHub settings:
 
 | Tool | Purpose |
 |---|---|
-| `fish` | Friendly shell (apt install) |
+| `fish` | Friendly shell — apt-installed |
 | `ripgrep` | Apt-installed at `/usr/bin/rg` so the Todo Tree extension finds it; dotfiles may shadow this with a newer version |
 | `ghrepo` | Fuzzy-search GitHub repos and clone — see [docs/ghrepo.md](docs/ghrepo.md) |
 | `ghrepo-core` | POSIX-sh helper both shell wrappers call into for the `gh` + `jq` + `git` plumbing |
@@ -80,6 +80,8 @@ These come from the maintainer's personal dotfiles repo, not this repo — a for
 | mise | Runtime version manager |
 | qsv | CSV toolkit |
 | Claude CLI | Anthropic's Claude in the terminal |
+
+> Note: dotfiles may also install `ripgrep`; the workbench's apt-installed `/usr/bin/rg` is what the Todo Tree extension binds to, while a dotfiles-installed `rg` (typically at `~/.local/bin/rg` or similar) takes PATH precedence in interactive shells.
 
 ### Shell configuration
 
