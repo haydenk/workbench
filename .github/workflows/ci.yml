@@ -20,7 +20,7 @@ jobs:
     name: shellcheck (bash + POSIX sh)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: Run shellcheck
         run: |
           shellcheck .devcontainer/scripts/post-create.sh
@@ -33,7 +33,7 @@ jobs:
     name: zsh -n ghrepo.zsh
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: Install zsh
         run: sudo apt-get update -qq && sudo apt-get install -y -qq zsh
       - name: Syntax check
@@ -43,7 +43,7 @@ jobs:
     name: fish -n ghrepo.fish
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: Install fish
         run: sudo apt-get update -qq && sudo apt-get install -y -qq fish
       - name: Syntax check
@@ -53,17 +53,17 @@ jobs:
     name: actionlint (lint workflow YAML + embedded run blocks)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: Lint workflow files
-        uses: raven-actions/actionlint@v2
+        uses: raven-actions/actionlint@205b530c5d9fa8f44ae9ed59f341a0db994aa6f8 # v2.1.2
 
   devcontainer-smoke:
     name: devcontainer build + ghrepo loads via real bootstrap
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: Build container and exercise the real bootstrap chain
-        uses: devcontainers/ci@v0.3
+        uses: devcontainers/ci@b63b30de439b47a52267f241112c5b453b673db5 # v0.3.1900000449
         with:
           runCmd: |
             set -e
