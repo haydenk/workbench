@@ -60,9 +60,10 @@ function ghrepo() {
           --query "$query" \
           --prompt "repo> " \
           --header "ENTER=clone  ESC=cancel  CTRL-O=open in browser" \
-          --preview 'name=$(awk "{print \$3}" <<< {}); gh repo view "$name" 2>/dev/null' \
+          --delimiter='  +' \
+          --preview 'gh repo view {3} 2>/dev/null' \
           --preview-window "right:50%:wrap" \
-          --bind "ctrl-o:execute(name=\$(awk '{print \$3}' <<< {}); gh repo view --web \"\$name\")" \
+          --bind 'ctrl-o:execute(gh repo view --web {3})' \
           --height "80%" --layout reverse \
     | awk '{print $3}') || return 0
 
