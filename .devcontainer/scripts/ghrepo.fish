@@ -9,6 +9,7 @@
 #   ghrepo [query]              fzf-pick a repo, clone to $GHREPO_DIR/<owner>/<repo>
 #   ghrepo -o/--org <org>       include an org's repos in the search
 #   ghrepo -d/--dest <dest>     clone into <dest> instead
+#   ghrepo -L/--limit <n>       cap each fetch at <n> repos (default 1000)
 #   ghrepo -l/--list [query]    print match(es), no clone
 #
 # Token resolution order for an org named "mycompany":
@@ -37,12 +38,17 @@ function _ghrepo_token --argument-names org
 end
 
 function ghrepo --description "Fuzzy-search GitHub repos and clone on demand"
-    argparse 'o/org=' 'd/dest=' 'l/list' 'h/help' -- $argv
+    argparse 'o/org=' 'd/dest=' 'L/limit=' 'l/list' 'h/help' -- $argv
     or return 1
 
     if set -q _flag_help
-        echo "Usage: ghrepo [-o org] [-d dest] [-l] [query]"
+        echo "Usage: ghrepo [-o org] [-d dest] [-L limit] [-l] [query]"
         return 0
+    end
+
+    # Function-scoped so both personal and org fetches see it
+    if set -q _flag_limit
+        set -lx GHREPO_LIMIT $_flag_limit
     end
 
     set -l repos_base (if set -q GHREPO_DIR; echo $GHREPO_DIR; else; echo "$HOME/repos"; end)

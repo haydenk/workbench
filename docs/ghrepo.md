@@ -9,8 +9,12 @@ ghrepo                     # fzf picker → clone to ~/repos/<owner>/<repo>
 ghrepo <query>             # pre-filtered search
 ghrepo -o <org> [query]    # include an org's repos (uses GH_TOKEN_ORG_<NAME>)
 ghrepo -d <path> [query]   # clone to a specific path
+ghrepo -L <n> [query]      # cap each fetch at <n> repos (default 1000)
 ghrepo list [query]        # print matches without cloning (no fzf)
 ```
+
+If a fetch hits the cap, `ghrepo` prints a warning to stderr so you know
+the result list may be truncated — bump `-L`/`--limit` if you need more.
 
 Inside the fzf picker:
 

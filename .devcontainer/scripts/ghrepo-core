@@ -3,6 +3,8 @@
 #
 # Subcommands:
 #   fetch [org]              Print TSV of repos accessible via $GH_TOKEN.
+#                            Honors $GHREPO_LIMIT (default 1000) and warns on
+#                            stderr when the result count hits the cap.
 #                            Columns: nameWithOwner, lock-emoji, description,
 #                                     updatedAt(YYYY-MM-DD)
 #   clone <owner/repo> <dir> Partial-clone owner/repo into dir,
@@ -15,18 +17,28 @@
 set -eu
 
 cmd_fetch() {
+  limit="${GHREPO_LIMIT:-1000}"
+  src="${1:-personal}"
   if [ -n "${1:-}" ]; then
-    gh repo list "$1" --limit 1000 \
+    gh repo list "$1" --limit "$limit" \
       --json nameWithOwner,description,isPrivate,isArchived,updatedAt 2>/dev/null
   else
-    gh repo list --limit 1000 \
+    gh repo list --limit "$limit" \
       --json nameWithOwner,description,isPrivate,isArchived,updatedAt 2>/dev/null
   fi | jq -r '.[] | [
       .nameWithOwner,
       (if .isPrivate then "🔒" else "🌐" end),
       (if .isArchived then "[archived] " else "" end) + (.description // ""),
       (.updatedAt | split("T")[0])
-    ] | @tsv'
+    ] | @tsv' \
+  | awk -v lim="$limit" -v src="$src" '
+      { print; count++ }
+      END {
+        if (count >= lim) {
+          printf "ghrepo-core: %s results may be truncated at %d; raise via --limit\n", src, lim > "/dev/stderr"
+        }
+      }
+    '
 }
 
 cmd_clone() {

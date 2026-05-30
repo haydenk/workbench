@@ -5,10 +5,11 @@
 # token resolution (zsh-specific indirect expansion), and the fzf invocation.
 #
 # Usage:
-#   ghrepo [query]            fzf-pick a repo, clone to $GHREPO_DIR/<owner>/<repo>
-#   ghrepo -o <org> [query]   include an org's repos in the search
-#   ghrepo -d <dest> [query]  clone into <dest> instead
-#   ghrepo list [query]       print match(es), no clone
+#   ghrepo [query]             fzf-pick a repo, clone to $GHREPO_DIR/<owner>/<repo>
+#   ghrepo -o <org> [query]    include an org's repos in the search
+#   ghrepo -d <dest> [query]   clone into <dest> instead
+#   ghrepo -L <n> [query]      cap each fetch at <n> repos (default 1000)
+#   ghrepo list [query]        print match(es), no clone
 #
 # Token resolution order for an org named "mycompany":
 #   1. GH_TOKEN_ORG_MYCOMPANY  (org-specific Codespace secret)
@@ -16,16 +17,17 @@
 #   3. GH_PAT                  (personal token — mapped to GITHUB_TOKEN at start)
 
 function ghrepo() {
-  local org="" dest="" list_only=false query=""
+  local org="" dest="" list_only=false query="" limit=""
   local repos_base="${GHREPO_DIR:-$HOME/repos}"
 
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      -o|--org)  org="$2"; shift 2 ;;
-      -d|--dest) dest="$2"; shift 2 ;;
-      list)      list_only=true; shift ;;
-      -h|--help) _ghrepo_usage; return 0 ;;
-      *)         query="${query:+$query }$1"; shift ;;
+      -o|--org)   org="$2"; shift 2 ;;
+      -d|--dest)  dest="$2"; shift 2 ;;
+      -L|--limit) limit="$2"; shift 2 ;;
+      list)       list_only=true; shift ;;
+      -h|--help)  _ghrepo_usage; return 0 ;;
+      *)          query="${query:+$query }$1"; shift ;;
     esac
   done
 
@@ -35,9 +37,9 @@ function ghrepo() {
   if ! gh auth status &>/dev/null 2>&1;    then echo "ghrepo: run gh auth login first" >&2; return 1; fi
 
   local all_repos org_repos
-  all_repos=$(GH_TOKEN="$(_ghrepo_token)" ghrepo-core fetch)
+  all_repos=$(GH_TOKEN="$(_ghrepo_token)" GHREPO_LIMIT="$limit" ghrepo-core fetch)
   if [[ -n "$org" ]]; then
-    org_repos=$(GH_TOKEN="$(_ghrepo_token "$org")" ghrepo-core fetch "$org")
+    org_repos=$(GH_TOKEN="$(_ghrepo_token "$org")" GHREPO_LIMIT="$limit" ghrepo-core fetch "$org")
     all_repos=$(printf '%s\n%s\n' "$all_repos" "$org_repos" \
       | awk -F'\t' '!seen[$1]++')
   fi
@@ -92,6 +94,6 @@ function _ghrepo_token() {
 }
 
 function _ghrepo_usage() {
-  echo "Usage: ghrepo [-o org] [-d dest] [query]"
-  echo "       ghrepo list [query]"
+  echo "Usage: ghrepo [-o org] [-d dest] [-L limit] [query]"
+  echo "       ghrepo list [-L limit] [query]"
 }
