@@ -1,0 +1,62 @@
+name: CI
+
+# Lint and smoke-test the devcontainer scripts and the container itself.
+# Four independent jobs so a fish parser error doesn't mask a shellcheck
+# regression and vice versa.
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  shellcheck:
+    name: shellcheck (bash + POSIX sh)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run shellcheck
+        run: |
+          shellcheck .devcontainer/scripts/post-create.sh
+          shellcheck .devcontainer/scripts/post-start.sh
+          shellcheck -s sh .devcontainer/scripts/ghrepo-core
+
+  zsh-syntax:
+    # shellcheck doesn't grok zsh-only syntax (${(P)var}, ${var:u}),
+    # so the zsh wrapper gets `zsh -n` instead.
+    name: zsh -n ghrepo.zsh
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install zsh
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq zsh
+      - name: Syntax check
+        run: zsh -n .devcontainer/scripts/ghrepo.zsh
+
+  fish-syntax:
+    name: fish -n ghrepo.fish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install fish
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq fish
+      - name: Syntax check
+        run: fish -n .devcontainer/scripts/ghrepo.fish
+
+  devcontainer-smoke:
+    name: devcontainer build + ghrepo loads in both shells
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build container and exercise both shells
+        uses: devcontainers/ci@v0.3
+        with:
+          runCmd: |
+            set -e
+            echo "── ghrepo-core on PATH ──"
+            command -v ghrepo-core
+            echo "── ghrepo function defined in zsh ──"
+            zsh -c 'source "$HOME/.config/zsh/ghrepo.zsh" && type ghrepo'
+            echo "── ghrepo function defined in fish ──"
+            fish -c 'source "$HOME/.config/fish/conf.d/ghrepo.fish"; functions -q ghrepo; or exit 1'

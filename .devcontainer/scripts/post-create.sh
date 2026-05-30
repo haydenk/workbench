@@ -25,6 +25,7 @@ sudo install -m 0755 "$SCRIPTS/ghrepo-core" /usr/local/bin/ghrepo-core
 mkdir -p "$HOME/.config/zsh"
 cp "$SCRIPTS/ghrepo.zsh" "$HOME/.config/zsh/ghrepo.zsh"
 if ! grep -q 'ghrepo.zsh' "$HOME/.config/zsh/.zshrc" 2>/dev/null; then
+  # shellcheck disable=SC2016  # literal $HOME wanted in the file, expanded at zsh read time
   echo 'source "$HOME/.config/zsh/ghrepo.zsh"' >> "$HOME/.config/zsh/.zshrc"
 fi
 
