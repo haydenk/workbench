@@ -6,11 +6,11 @@
 # token resolution (fish-specific indirect lookup), and the fzf invocation.
 #
 # Usage:
-#   ghrepo [query]              fzf-pick a repo, clone to $GHREPO_DIR/<owner>/<repo>
-#   ghrepo -o/--org <org>       include an org's repos in the search
-#   ghrepo -d/--dest <dest>     clone into <dest> instead
-#   ghrepo -L/--limit <n>       cap each fetch at <n> repos (default 1000)
-#   ghrepo -l/--list [query]    print match(es), no clone
+#   ghrepo [query]                fzf-pick a repo, clone to $GHREPO_DIR/<owner>/<repo>
+#   ghrepo -o/--org <org>         include an org's repos in the search
+#   ghrepo -d/--dest <dest>       clone into <dest> instead
+#   ghrepo -L/--limit <n>         cap each fetch at <n> repos (default 1000)
+#   ghrepo {list|-l|--list}       print match(es), no clone
 #
 # Token resolution order for an org named "mycompany":
 #   1. GH_TOKEN_ORG_MYCOMPANY  (org-specific Codespace secret)
@@ -41,8 +41,15 @@ function ghrepo --description "Fuzzy-search GitHub repos and clone on demand"
     argparse 'o/org=' 'd/dest=' 'L/limit=' 'l/list' 'h/help' -- $argv
     or return 1
 
+    # `list` positional subcommand is an alias for -l/--list (zsh parity)
+    if test "$argv[1]" = "list"
+        set _flag_list 1
+        set -e argv[1]
+    end
+
     if set -q _flag_help
-        echo "Usage: ghrepo [-o org] [-d dest] [-L limit] [-l] [query]"
+        echo "Usage: ghrepo [-o org] [-d dest] [-L limit] [query]"
+        echo "       ghrepo {list|-l} [-L limit] [query]"
         return 0
     end
 

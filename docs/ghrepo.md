@@ -11,6 +11,7 @@ ghrepo -o <org> [query]    # include an org's repos (uses GH_TOKEN_ORG_<NAME>)
 ghrepo -d <path> [query]   # clone to a specific path
 ghrepo -L <n> [query]      # cap each fetch at <n> repos (default 1000)
 ghrepo list [query]        # print matches without cloning (no fzf)
+ghrepo -l [query]          # same — flag form, works identically in zsh & fish
 ```
 
 If a fetch hits the cap, `ghrepo` prints a warning to stderr so you know
