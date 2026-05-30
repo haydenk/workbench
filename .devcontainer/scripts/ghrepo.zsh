@@ -48,7 +48,7 @@ function ghrepo() {
   # list mode: print matches, skip the interactive picker
   if $list_only; then
     if [[ -n "$query" ]]; then
-      echo "$all_repos" | awk -F'\t' -v q="$query" 'tolower($1) ~ tolower(q) {print $1}'
+      echo "$all_repos" | awk -F'\t' -v q="$query" 'index(tolower($1), tolower(q)) > 0 {print $1}'
     else
       echo "$all_repos" | awk -F'\t' '{print $1}'
     fi

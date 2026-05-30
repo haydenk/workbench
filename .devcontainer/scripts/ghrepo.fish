@@ -87,7 +87,7 @@ function ghrepo --description "Fuzzy-search GitHub repos and clone on demand"
     if set -q _flag_list
         if test -n "$query"
             string join \n $all_repos \
-                | awk -F'\t' -v q="$query" 'tolower($1) ~ tolower(q) {print $1}'
+                | awk -F'\t' -v q="$query" 'index(tolower($1), tolower(q)) > 0 {print $1}'
         else
             string join \n $all_repos | awk -F'\t' '{print $1}'
         end
