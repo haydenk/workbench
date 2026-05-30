@@ -32,7 +32,7 @@ For project-scoped versions: `cd <project> && mise use node@22` writes to that p
 
 ### AI CLIs
 
-**Claude Code** ships a native installer that drops a self-contained binary — no node runtime, no global npm package. Install once via your dotfiles bootstrap (or run the installer manually on a Codespace) and you're done. The official setup steps live at [docs.claude.com/en/docs/claude-code/setup](https://docs.claude.com/en/docs/claude-code/setup); the binary typically lands under `~/.local/bin/`.
+**Claude Code** ships a native installer that drops a self-contained binary — no node runtime, no global npm package. Install once via your dotfiles bootstrap (or run the installer manually on a Codespace) and you're done. The official setup steps live at [docs.claude.com/en/docs/claude-code/setup](https://docs.claude.com/en/docs/claude-code/setup); the installer's output tells you where the binary lands.
 
 **Codex CLI** is currently npm-distributed (`@openai/codex`). If you'd rather not have a global node install on every Codespace purely to host a CLI tool, the honest options are:
 

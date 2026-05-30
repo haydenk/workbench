@@ -1,7 +1,7 @@
 name: CI
 
 # Lint and smoke-test the devcontainer scripts and the container itself.
-# Four independent jobs so a fish parser error doesn't mask a shellcheck
+# Independent jobs so a fish parser error doesn't mask a shellcheck
 # regression and vice versa.
 
 on:

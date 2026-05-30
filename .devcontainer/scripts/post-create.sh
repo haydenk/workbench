@@ -24,7 +24,7 @@ fi
 rm -f "$HOME/.zshrc" "$HOME/.zprofile" "$HOME/.zlogin" "$HOME/.zlogout"
 
 # ── Install ghrepo shell functions ───────────────────────────────────────────
-SCRIPTS=/workspaces/workbench/.devcontainer/scripts
+SCRIPTS="$(dirname "${BASH_SOURCE[0]}")"
 
 # POSIX plumbing shared by the zsh + fish wrappers
 sudo install -m 0755 "$SCRIPTS/ghrepo-core" /usr/local/bin/ghrepo-core

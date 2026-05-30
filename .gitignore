@@ -63,8 +63,7 @@ Temporary Items
 *.vsix
 
 ### VisualStudioCode Patch ###
-# Ignore all local history of files
-.history
+# .history is already covered above. Ionide (F# tooling) cache:
 .ionide
 
 ### Windows ###

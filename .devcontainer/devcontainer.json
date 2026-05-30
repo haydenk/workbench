@@ -33,8 +33,8 @@
   },
 
   // ─── Lifecycle scripts ──────────────────────────────────────────────────────
-  "postCreateCommand": "bash /workspaces/workbench/.devcontainer/scripts/post-create.sh",
-  "postStartCommand": "bash /workspaces/workbench/.devcontainer/scripts/post-start.sh",
+  "postCreateCommand": "bash ${containerWorkspaceFolder}/.devcontainer/scripts/post-create.sh",
+  "postStartCommand": "bash ${containerWorkspaceFolder}/.devcontainer/scripts/post-start.sh",
 
   // ─── VS Code / Cursor settings ──────────────────────────────────────────────
   "customizations": {
@@ -86,5 +86,5 @@
     "storage": "32gb"
   },
 
-  "postAttachCommand": "printf '\\n✓ workbench ready\\n  ghrepo        fuzzy-clone any repo you have access to\\n  mise install  install a repo\\u2019s pinned runtimes\\n  gh auth status  verify GitHub auth\\n\\n'"
+  "postAttachCommand": "printf '\\n✓ workbench ready\\n  ghrepo            fuzzy-clone any repo you have access to\\n  mise install      inside a cloned repo, install its pinned runtimes\\n  gh auth status    verify GitHub auth\\n\\n'"
 }

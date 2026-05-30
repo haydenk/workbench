@@ -8,7 +8,7 @@
   </a>
 </p>
 
-A GitHub Codespaces devcontainer for general-purpose terminal, scripting, and DevOps work. Opens a fully configured Linux environment with your dotfiles, cloud CLIs, and Docker — ready in seconds.
+A GitHub Codespaces devcontainer for general-purpose terminal, scripting, and DevOps work. Opens a fully configured Linux environment with your dotfiles, `gh` CLI, Docker, and Tailscale — ready in seconds.
 
 > **Note:** Designed and tested specifically for **GitHub Codespaces**. While the devcontainer spec is technically portable, features like dotfiles integration, Codespaces secrets (`GH_PAT`), and host requirements are Codespaces-specific and won't work as expected in other devcontainer environments (e.g. local VS Code Dev Containers).
 
@@ -97,11 +97,11 @@ Repos cloned into this workspace bring their own `mise.toml`. Run `mise install`
 |---|---|
 | bash-ide, shell-format, shellcheck, vscode-fish | Shell script editing + linting (bash, sh, fish) |
 | GitLens, git-graph, vscode-github-actions | Git history, blame, workflow editing |
-| vscode-yaml, even-better-toml | Config file editing |
+| vscode-yaml, even-better-toml, EditorConfig | Config file editing |
 | markdownlint | Markdown linting for the docs |
 | vscode-docker | Docker integration |
-| errorlens, path-intellisense, todo-tree, EditorConfig | Editor productivity + style |
-| code-spell-checker | Catches typos in docs and code |
+| errorlens, path-intellisense, todo-tree | Editor productivity |
+| code-spell-checker | Catches typos (project word list in `.cspell.json`) |
 | Claude Code, GitHub Copilot | AI assistants |
 
 ## Structure
