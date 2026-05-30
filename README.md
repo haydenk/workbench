@@ -10,7 +10,8 @@
 
 A GitHub Codespaces devcontainer for general-purpose terminal, scripting, and DevOps work. Opens a fully configured Linux environment with your dotfiles, `gh` CLI, Docker, and Tailscale — ready in seconds.
 
-> **Note:** Designed and tested specifically for **GitHub Codespaces**. While the devcontainer spec is technically portable, features like dotfiles integration, Codespaces secrets (`GH_PAT`), and host requirements are Codespaces-specific and won't work as expected in other devcontainer environments (e.g. local VS Code Dev Containers).
+> [!NOTE]
+> Designed and tested specifically for **GitHub Codespaces**. While the devcontainer spec is technically portable, features like dotfiles integration, Codespaces secrets (`GH_PAT`), and host requirements are Codespaces-specific and won't work as expected in other devcontainer environments (e.g. local VS Code Dev Containers).
 
 ## Getting started
 

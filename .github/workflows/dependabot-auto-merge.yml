@@ -6,9 +6,12 @@ name: Dependabot auto-merge
 #
 # Uses the default GITHUB_TOKEN. No extra secrets required.
 #
-# Prerequisite (one-time, GitHub UI):
-#   Settings → General → Pull Requests → "Allow auto-merge" must be enabled,
-#   otherwise `gh pr merge --auto` has no flag to flip.
+# Prerequisites (one-time, GitHub UI):
+#   • Settings → General → Pull Requests → "Allow auto-merge" must be enabled;
+#     otherwise `gh pr merge --auto` errors instead of queueing the merge.
+#   • Settings → Actions → General → Workflow permissions → "Allow GitHub
+#     Actions to create and approve pull requests" must also be enabled;
+#     otherwise the approve step silently no-ops.
 
 on: pull_request_target
 

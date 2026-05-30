@@ -11,7 +11,7 @@ ghrepo -o <org> [query]    # include an org's repos (uses GH_TOKEN_ORG_<NAME>)
 ghrepo -d <path> [query]   # clone to a specific path
 ghrepo -L <n> [query]      # cap each fetch at <n> repos (default 1000)
 ghrepo list [query]        # print matches without cloning (no fzf)
-ghrepo -l [query]          # same — flag form, works identically in zsh & fish
+ghrepo -l/--list [query]   # same — flag form, works identically in zsh & fish
 ```
 
 If a fetch hits the cap, `ghrepo` prints a warning to stderr so you know
@@ -23,7 +23,7 @@ Inside the fzf picker:
 - `CTRL-O` — open repo in browser
 - `ESC` — cancel
 
-Cloned repos land in `~/repos/<owner>/<repo>` by default. Set `GHREPO_DIR` to change the base path.
+Cloned repos land in `~/repos/<owner>/<repo>` by default. Set `GHREPO_DIR` to change the base path, and `GHREPO_LIMIT` (or pass `-L`/`--limit`) to change the per-fetch cap from its default of 1000.
 
 ## Token resolution
 
@@ -40,7 +40,7 @@ See [secrets.md](secrets.md) for how to generate and store the PATs.
 
 ## Working on cloned repos in VS Code
 
-`ghrepo` clones into `~/repos/<owner>/<repo>` by default, but the VS Code window attached to this Codespace is rooted at `/workspaces/workbench` (this repo). Anything outside that folder doesn't show up in the Explorer sidebar and isn't covered by workspace-wide search, Source Control, or the file picker.
+`ghrepo` clones into `~/repos/<owner>/<repo>` by default, but the VS Code window attached to this Codespace is rooted at this repo's path under `/workspaces/`. Anything outside that folder doesn't show up in the Explorer sidebar and isn't covered by workspace-wide search, Source Control, or the file picker.
 
 A few ways to work around that, roughly in order of preference:
 
@@ -71,7 +71,7 @@ Or set `GHREPO_DIR=/workspaces` in your shell profile to make it the default. Tr
 ### 4. Symlink `~/repos` into the workspace
 
 ```sh
-ln -s ~/repos /workspaces/workbench/repos
+ln -s ~/repos ./repos    # from inside this repo's root
 ```
 
 Surfaces `~/repos` under the already-open workspace root without moving anything. This is the quickest fix but mixes cloned projects into the `workbench` Explorer tree, and git will see the symlink as an untracked file (add `repos` to `.git/info/exclude` to hide it locally).
