@@ -12,7 +12,15 @@ sudo apt-get update -y -qq
 # ── Install fish ──────────────────────────────────────────────────────────────
 sudo apt-get install -y -qq fish
 
-# ── Remove default zsh files from home (ZDOTDIR=~/.config/zsh handles config) ─
+# ── zsh bootstrap (ZDOTDIR → ~/.config/zsh) ──────────────────────────────────
+# Ensure zsh redirects its config lookups into ~/.config/zsh/. Idempotent:
+# leaves a dotfile-provided ~/.zshenv alone if it already sets ZDOTDIR.
+if [ ! -f "$HOME/.zshenv" ] || ! grep -q ZDOTDIR "$HOME/.zshenv"; then
+  # shellcheck disable=SC2016  # literal $HOME wanted in the file, expanded at zsh read time
+  echo 'export ZDOTDIR="$HOME/.config/zsh"' >> "$HOME/.zshenv"
+fi
+
+# Remove default home-dir zsh files; ZDOTDIR now points zsh at ~/.config/zsh/.
 rm -f "$HOME/.zshrc" "$HOME/.zprofile" "$HOME/.zlogin" "$HOME/.zlogout"
 
 # ── Install ghrepo shell functions ───────────────────────────────────────────

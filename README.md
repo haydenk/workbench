@@ -16,7 +16,7 @@ A GitHub Codespaces devcontainer for general-purpose terminal, scripting, and De
 
 1. Click the *Open in GitHub Codespaces* badge (or create one manually from this repo)
 2. Codespaces installs your dotfiles automatically
-3. `post-create.sh` installs `fish` and wires up the `ghrepo` shell function
+3. `post-create.sh` installs `fish`, wires up the `ghrepo` shell function, and writes `~/.zshenv` so zsh reads its config from `~/.config/zsh/` (skipped if your dotfiles already set `ZDOTDIR`)
 4. `post-attach` prints a short next-steps hint in your terminal
 
 Configure once in your GitHub settings:
