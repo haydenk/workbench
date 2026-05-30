@@ -59,6 +59,7 @@ Configure once in your GitHub settings:
 | Tool | Purpose |
 |---|---|
 | `fish` | Friendly shell (apt install) |
+| `ripgrep` | Apt-installed at `/usr/bin/rg` so the Todo Tree extension finds it; dotfiles may shadow this with a newer version |
 | `ghrepo` | Fuzzy-search GitHub repos and clone — see [docs/ghrepo.md](docs/ghrepo.md) |
 | `ghrepo-core` | POSIX-sh helper both shell wrappers call into for the `gh` + `jq` + `git` plumbing |
 | `~/.zshenv` | Sets `ZDOTDIR=~/.config/zsh` so zsh reads its config from XDG (skipped if your dotfiles already set it) |

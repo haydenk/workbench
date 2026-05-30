@@ -9,8 +9,12 @@ echo "════════════════════════�
 echo 'APT::Acquire::Retries "3";' | sudo tee /etc/apt/apt.conf.d/80retries > /dev/null
 sudo apt-get update -y -qq
 
-# ── Install fish ──────────────────────────────────────────────────────────────
-sudo apt-get install -y -qq fish
+# ── Install fish + ripgrep ────────────────────────────────────────────────────
+# ripgrep at a known path (/usr/bin/rg) so the Todo Tree VS Code extension
+# finds it without relying on PATH or dotfiles install timing. The dotfiles
+# may install a newer ripgrep elsewhere; that one takes PATH precedence in
+# interactive shells.
+sudo apt-get install -y -qq fish ripgrep
 
 # ── zsh bootstrap (ZDOTDIR → ~/.config/zsh) ──────────────────────────────────
 # Ensure zsh redirects its config lookups into ~/.config/zsh/. Idempotent:
