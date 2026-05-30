@@ -1,5 +1,9 @@
 # ghrepo — fuzzy-search GitHub repos you have access to and clone on demand.
-# Placed in conf.d/ so both ghrepo and _ghrepo_fetch are defined at startup.
+# Placed in conf.d/ so ghrepo is defined at startup.
+#
+# fish wrapper. The gh + jq + git plumbing lives in `ghrepo-core` (POSIX sh)
+# so the same logic backs the zsh wrapper. This file owns arg parsing,
+# token resolution (fish-specific indirect lookup), and the fzf invocation.
 #
 # Usage:
 #   ghrepo [query]              fzf-pick a repo, clone to $GHREPO_DIR/<owner>/<repo>
@@ -32,21 +36,6 @@ function _ghrepo_token --argument-names org
     end
 end
 
-function _ghrepo_fetch --argument-names org
-    set -l args repo list --limit 1000 --json nameWithOwner,description,isPrivate,isArchived,updatedAt
-    if test -n "$org"
-        set args repo list $org --limit 1000 --json nameWithOwner,description,isPrivate,isArchived,updatedAt
-    end
-    set -lx GH_TOKEN (_ghrepo_token $org)
-    gh $args 2>/dev/null \
-        | jq -r '.[] | [
-            .nameWithOwner,
-            (if .isPrivate then "🔒" else "🌐" end),
-            (if .isArchived then "[archived] " else "" end) + (.description // ""),
-            (.updatedAt | split("T")[0])
-          ] | @tsv'
-end
-
 function ghrepo --description "Fuzzy-search GitHub repos and clone on demand"
     argparse 'o/org=' 'd/dest=' 'l/list' 'h/help' -- $argv
     or return 1
@@ -64,14 +53,19 @@ function ghrepo --description "Fuzzy-search GitHub repos and clone on demand"
     if not command -q fzf
         echo "ghrepo: fzf not found" >&2; return 1
     end
+    if not command -q ghrepo-core
+        echo "ghrepo: ghrepo-core not found in PATH" >&2; return 1
+    end
     if not gh auth status &>/dev/null 2>&1
         echo "ghrepo: run gh auth login first" >&2; return 1
     end
 
-    # Fetch repos
-    set -l all_repos (_ghrepo_fetch)
+    # Fetch personal repos
+    set -lx GH_TOKEN (_ghrepo_token)
+    set -l all_repos (ghrepo-core fetch)
     if set -q _flag_org
-        set -l org_repos (_ghrepo_fetch $_flag_org)
+        set -lx GH_TOKEN (_ghrepo_token $_flag_org)
+        set -l org_repos (ghrepo-core fetch $_flag_org)
         # Merge and deduplicate by first field (nameWithOwner)
         set all_repos (printf '%s\n%s\n' (string join \n $all_repos) (string join \n $org_repos) \
             | awk -F'\t' '!seen[$1]++')
@@ -112,22 +106,14 @@ function ghrepo --description "Fuzzy-search GitHub repos and clone on demand"
     # Clone
     set -l parts (string split / $selected)
     set -l owner $parts[1]
-    set -l repo $parts[2]
 
     set -l target
     if set -q _flag_dest
         set target $_flag_dest
     else
-        set target "$repos_base/$owner/$repo"
+        set target "$repos_base/$selected"
     end
 
-    if test -d "$target/.git"
-        echo "Already cloned → $target (pulling)"
-        git -C $target pull --ff-only 2>/dev/null; or true
-    else
-        echo "Cloning $selected → $target"
-        mkdir -p (dirname $target)
-        set -lx GH_TOKEN (_ghrepo_token $owner)
-        gh repo clone $selected $target -- --filter=blob:none
-    end
+    set -lx GH_TOKEN (_ghrepo_token $owner)
+    ghrepo-core clone $selected $target
 end

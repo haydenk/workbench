@@ -1,0 +1,49 @@
+#!/usr/bin/env sh
+# ghrepo-core — shell-agnostic plumbing for ghrepo.{zsh,fish}.
+#
+# Subcommands:
+#   fetch [org]              Print TSV of repos accessible via $GH_TOKEN.
+#                            Columns: nameWithOwner, lock-emoji, description,
+#                                     updatedAt(YYYY-MM-DD)
+#   clone <owner/repo> <dir> Partial-clone owner/repo into dir,
+#                            or fast-forward-pull if dir/.git already exists.
+#
+# Caller sets GH_TOKEN to the right PAT before invoking. Indirect-expansion
+# of GH_TOKEN_ORG_<NAME> stays in the per-shell wrappers because the syntax
+# differs (zsh ${(P)var} vs fish `env | string replace`).
+
+set -eu
+
+cmd_fetch() {
+  if [ -n "${1:-}" ]; then
+    gh repo list "$1" --limit 1000 \
+      --json nameWithOwner,description,isPrivate,isArchived,updatedAt 2>/dev/null
+  else
+    gh repo list --limit 1000 \
+      --json nameWithOwner,description,isPrivate,isArchived,updatedAt 2>/dev/null
+  fi | jq -r '.[] | [
+      .nameWithOwner,
+      (if .isPrivate then "🔒" else "🌐" end),
+      (if .isArchived then "[archived] " else "" end) + (.description // ""),
+      (.updatedAt | split("T")[0])
+    ] | @tsv'
+}
+
+cmd_clone() {
+  selected="${1:?ghrepo-core clone: missing <owner/repo>}"
+  target="${2:?ghrepo-core clone: missing <target-dir>}"
+  if [ -d "$target/.git" ]; then
+    echo "Already cloned → $target (pulling)"
+    git -C "$target" pull --ff-only 2>/dev/null || true
+  else
+    echo "Cloning $selected → $target"
+    mkdir -p "$(dirname "$target")"
+    gh repo clone "$selected" "$target" -- --filter=blob:none
+  fi
+}
+
+case "${1:-}" in
+  fetch) shift; cmd_fetch "$@" ;;
+  clone) shift; cmd_clone "$@" ;;
+  *) echo "ghrepo-core: usage: ghrepo-core {fetch [org]|clone <owner/repo> <dir>}" >&2; exit 1 ;;
+esac

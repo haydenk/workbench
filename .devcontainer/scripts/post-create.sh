@@ -18,6 +18,9 @@ rm -f "$HOME/.zshrc" "$HOME/.zprofile" "$HOME/.zlogin" "$HOME/.zlogout"
 # ── Install ghrepo shell functions ───────────────────────────────────────────
 SCRIPTS=/workspaces/workbench/.devcontainer/scripts
 
+# POSIX plumbing shared by the zsh + fish wrappers
+sudo install -m 0755 "$SCRIPTS/ghrepo-core" /usr/local/bin/ghrepo-core
+
 # zsh — copy to ZSH_CUSTOM dir and source from .zshrc
 mkdir -p "$HOME/.config/zsh"
 cp "$SCRIPTS/ghrepo.zsh" "$HOME/.config/zsh/ghrepo.zsh"
